@@ -1,3 +1,5 @@
+package Main;
+
 import Scene.Scene;
 import java.util.TreeMap;
 
@@ -12,6 +14,13 @@ public class SceneMgr
 
         m_MapScene.put(sceneName, scene);
         return true;
+    }
+    public void ChangeScene(String appearSceneName, String disappearSceneName)
+    {
+        Scene appearScene = m_MapScene.get(appearSceneName);
+        Scene disappearScene = m_MapScene.get(disappearSceneName);
+        appearScene.SetVisible(false);
+        disappearScene.SetVisible(true);
     }
     public Scene GetScene(String sceneName){ return m_MapScene.get(sceneName); }
 
