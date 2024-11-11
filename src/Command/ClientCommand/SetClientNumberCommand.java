@@ -14,7 +14,6 @@ public class SetClientNumberCommand implements ClientCommand
         {
             String clientNumber = formatAnswerMap.get("ClientNumber");
             Client.m_NumOfClient = Integer.parseInt(clientNumber);
-            System.out.println("ClientNumber : " + clientNumber);
         }
     }
 }

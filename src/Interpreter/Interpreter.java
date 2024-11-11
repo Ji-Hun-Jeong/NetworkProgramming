@@ -18,6 +18,8 @@ public class Interpreter<T>
 
         for(T command : vecCommand)
             ((Command)command).Execute(formatString, m_MapFormatAnswer);
+
+        m_MapFormatAnswer.clear();
     }
     private void GetFormatAnswerMap(String formatString, String dataType)
     {

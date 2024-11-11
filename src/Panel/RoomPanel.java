@@ -17,16 +17,17 @@ class EnterRoomActionListener extends MouseAdapter
     public EnterRoomActionListener(ClientDelegator clientDelegator)
     {
         m_ClientDelegator = clientDelegator;
-        m_ChangeSceneBuilder = new ClientBuilder("ChangeScene", Client.m_NumOfClient);
-        m_ChangeSceneBuilder.AddFormatString("AppearScene:GameScene");
-        m_ChangeSceneBuilder.AddFormatString("DisappearScene:WaitingScene");
+
     }
     @Override
     public void mouseClicked(MouseEvent e)
     {
         if(e.getClickCount() == 2)
         {
-            String formatString = m_ChangeSceneBuilder.Build();
+            ClientBuilder changeSceneBuilder = new ClientBuilder("ChangeScene", Client.m_NumOfClient);
+            changeSceneBuilder.AddFormatString("AppearScene:GameScene");
+            changeSceneBuilder.AddFormatString("DisappearScene:WaitingScene");
+            String formatString = changeSceneBuilder.Build();
             try
             {
                 m_ClientDelegator.SendData(formatString);
@@ -38,18 +39,17 @@ class EnterRoomActionListener extends MouseAdapter
         }
     }
     private ClientDelegator m_ClientDelegator = null;
-    private ClientBuilder m_ChangeSceneBuilder = null;
 }
 public class RoomPanel extends MyPanel
 {
-    public RoomPanel(ClientDelegator clientDelegator, String roomName, String usePassword, String passWord, int numofMasterClient,
+    public RoomPanel(ClientDelegator clientDelegator, String roomName, String usePassword, String passWord, int numOfMasterClient,
                      int groupNum , int width, int height)
     {
         super(clientDelegator);
         m_RoomName = roomName;
-        m_UsePassword = usePassword.equals("True") ? true : false;
+        m_UsePassword = usePassword.equals("True");
         m_Password = passWord;
-        m_NumOfMasterClient = numofMasterClient;
+        m_NumOfMasterClient = numOfMasterClient;
         m_GroupNum = groupNum;
         m_CountOfClient += 1;
 

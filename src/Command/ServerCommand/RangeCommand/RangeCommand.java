@@ -1,9 +1,8 @@
-package Command.RangeCommand;
+package Command.ServerCommand.RangeCommand;
 
 import Command.Command;
 import Main.Server;
 
-import java.io.IOException;
 import java.util.TreeMap;
 
 public abstract class RangeCommand implements Command

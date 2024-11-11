@@ -12,8 +12,7 @@ public class ClientBuilder extends FormatBuilder
     @Override
     public String Build()
     {
-        String result = "";
-        result = result.concat("ClientData : \n{\n");
+        String result = "ClientData : \n{\n";
         result = result.concat("Command:" + m_Command + ",\n");
         result = result.concat("ClientNumber:" + m_NumOfClient);
         result = result.concat(super.attachFormatString());

@@ -13,10 +13,9 @@ import java.io.IOException;
 
 class MakeRoomFrame extends JFrame
 {
-    public MakeRoomFrame(ClientDelegator clientDelegator, ClientBuilder makeRoomBuilder)
+    public MakeRoomFrame(ClientDelegator clientDelegator)
     {
         m_ClientDelegator = clientDelegator;
-        m_MakeRoomBuilder = makeRoomBuilder;
 
         setTitle("Main Frame");
         setSize(500, 800);
@@ -78,12 +77,13 @@ class MakeRoomFrame extends JFrame
                 m_UsePassword = m_UsePasswordCheckBox.isSelected() ? "True" : "False";
                 m_Password = m_PasswordTextArea.getText();
 
-                m_MakeRoomBuilder.AddFormatString("RoomName:" + m_RoomName);
-                m_MakeRoomBuilder.AddFormatString("UsePassword:" + m_UsePassword);
+                ClientBuilder makeRoomBuilder = new ClientBuilder("MakeRoom", Client.m_NumOfClient);
+                makeRoomBuilder.AddFormatString("RoomName:" + m_RoomName);
+                makeRoomBuilder.AddFormatString("UsePassword:" + m_UsePassword);
                 if(m_UsePasswordCheckBox.isSelected())
-                    m_MakeRoomBuilder.AddFormatString("Password:" + m_Password);
+                    makeRoomBuilder.AddFormatString("Password:" + m_Password);
 
-                String formatString = m_MakeRoomBuilder.Build();
+                String formatString = makeRoomBuilder.Build();
 
                 try
                 {
@@ -107,7 +107,6 @@ class MakeRoomFrame extends JFrame
 
     }
     private ClientDelegator m_ClientDelegator = null;
-    private ClientBuilder m_MakeRoomBuilder = null;
     private JTextArea m_RoomNameTextArea = new JTextArea();
     private JTextArea m_PasswordTextArea = new JTextArea();
     private JCheckBox m_UsePasswordCheckBox = new JCheckBox();
@@ -118,19 +117,17 @@ class MakeRoomFrame extends JFrame
 }
 class MakeRoomListener implements ActionListener
 {
-    public MakeRoomListener(ClientDelegator clientCommunicator, ClientBuilder makeRoomBuilder)
+    public MakeRoomListener(ClientDelegator clientDelegator)
     {
-        m_ClientCommunicator = clientCommunicator;
-        m_MakeRoomBuilder = makeRoomBuilder;
-        m_MakeRoomFrame = new MakeRoomFrame(m_ClientCommunicator, m_MakeRoomBuilder);
+        m_ClientDelegator = clientDelegator;
+        m_MakeRoomFrame = new MakeRoomFrame(m_ClientDelegator);
     }
     @Override
     public void actionPerformed(ActionEvent e)
     {
         m_MakeRoomFrame.setVisible(true);
     }
-    private ClientDelegator m_ClientCommunicator = null;
-    private ClientBuilder m_MakeRoomBuilder = null;
+    private ClientDelegator m_ClientDelegator = null;
     private MakeRoomFrame m_MakeRoomFrame = null;
 }
 public class UtilityPanel extends MyPanel
@@ -139,14 +136,12 @@ public class UtilityPanel extends MyPanel
     {
         super(clientDelegator);
         m_ClientDelegator = clientDelegator;
-        m_MakeRoomBuilder = new ClientBuilder("MakeRoom", Client.m_NumOfClient);
 
         m_MakeRoomButton.setSize(new Dimension(100,50));
         m_MakeRoomButton.setText("방 만들기");
-        m_MakeRoomButton.addActionListener(new MakeRoomListener(m_ClientDelegator, m_MakeRoomBuilder));
+        m_MakeRoomButton.addActionListener(new MakeRoomListener(m_ClientDelegator));
         add(m_MakeRoomButton);
     }
     private JButton m_MakeRoomButton = new JButton();
 
-    private ClientBuilder m_MakeRoomBuilder = null;
 }

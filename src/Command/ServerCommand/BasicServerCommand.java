@@ -1,6 +1,6 @@
 package Command.ServerCommand;
 
-import Command.RangeCommand.RangeCommand;
+import Command.ServerCommand.RangeCommand.RangeCommand;
 import FormatBuilder.ServerBuilder;
 
 import java.util.TreeMap;

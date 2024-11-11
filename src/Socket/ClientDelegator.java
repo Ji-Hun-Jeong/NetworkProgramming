@@ -30,6 +30,7 @@ public class ClientDelegator extends SocketDelegator
                         break;
                 }
                 m_ClientInterpreter.Interpret(receiveString, "ServerData");
+                System.out.println(receiveString);
                 receiveString = "";
             }
             catch (IOException e)

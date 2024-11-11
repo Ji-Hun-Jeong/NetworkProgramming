@@ -1,8 +1,8 @@
 package Main;
 
-import Command.RangeCommand.BroadcastAllCommand;
-import Command.RangeCommand.BroadcastMeCommand;
-import Command.RangeCommand.RangeCommand;
+import Command.ServerCommand.RangeCommand.BroadcastAllCommand;
+import Command.ServerCommand.RangeCommand.BroadcastMeCommand;
+import Command.ServerCommand.RangeCommand.RangeCommand;
 import Command.ServerCommand.BasicServerCommand;
 import Command.ServerCommand.GiveClientNumberCommand;
 import Command.ServerCommand.ServerCommand;
@@ -29,10 +29,12 @@ public class Server
 
         m_ServerInterpreter.AddCommand("ChatAll", serverCommand);
 
-        serverCommand = new BasicServerCommand(new BroadcastMeCommand(this));
+        RangeCommand broadCastMeCommand = new BroadcastMeCommand(this);
+
+        serverCommand = new BasicServerCommand(broadCastMeCommand);
         m_ServerInterpreter.AddCommand("ChangeScene", serverCommand);
 
-        serverCommand = new GiveClientNumberCommand(new BroadcastMeCommand(this));
+        serverCommand = new GiveClientNumberCommand(broadCastMeCommand);
         m_ServerInterpreter.AddCommand("SetClientNumber", serverCommand);
 
     }

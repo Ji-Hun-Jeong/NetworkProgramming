@@ -3,7 +3,6 @@ package Socket;
 import Command.ClientCommand.ClientCommand;
 import Command.ClientCommand.SetClientNumberCommand;
 import FormatBuilder.ClientBuilder;
-import FormatBuilder.ServerBuilder;
 import Main.SceneMgr;
 import Scene.*;
 
@@ -16,29 +15,29 @@ public class Client
     {
         // Server Connect
         Socket socket = new Socket("localhost", portNum);
-        m_ClientCommunicator = new ClientDelegator(socket);
+        m_ClientDelegator = new ClientDelegator(socket);
 
-        Thread readThread = new Thread(m_ClientCommunicator);
+        Thread readThread = new Thread(m_ClientDelegator);
         readThread.start();
         System.out.println("Success");
 
-        WaitingScene firstScene = new WaitingScene(m_ClientCommunicator, 1280,740,100,100);
+        WaitingScene firstScene = new WaitingScene(m_ClientDelegator, 1280,740,100,100);
         m_SceneMgr.AddScene(firstScene);
 
-        GameScene gameScene = new GameScene(m_ClientCommunicator, 1280,740,100,100);
+        GameScene gameScene = new GameScene(m_ClientDelegator, 1280,740,100,100);
         m_SceneMgr.AddScene(gameScene);
 
         firstScene.SetVisible(true);
 
         ClientCommand setClientNumberCommand = new SetClientNumberCommand();
-        m_ClientCommunicator.AddCommand("SetClientNumber",setClientNumberCommand);
+        m_ClientDelegator.AddCommand("SetClientNumber",setClientNumberCommand);
 
         ClientBuilder clientBuilder = new ClientBuilder("SetClientNumber", Client.m_NumOfClient);
         String formatString = clientBuilder.Build();
-        m_ClientCommunicator.SendData(formatString);
+        m_ClientDelegator.SendData(formatString);
 
     }
     public static int m_NumOfClient = -1;
     private SceneMgr m_SceneMgr = SceneMgr.GetInst();
-    private ClientDelegator m_ClientCommunicator = null;
+    private ClientDelegator m_ClientDelegator = null;
 }

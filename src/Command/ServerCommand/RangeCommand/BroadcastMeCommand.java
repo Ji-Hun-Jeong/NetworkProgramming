@@ -1,6 +1,5 @@
-package Command.RangeCommand;
+package Command.ServerCommand.RangeCommand;
 
-import Command.Command;
 import Main.Server;
 
 import java.io.IOException;
@@ -15,7 +14,6 @@ public class BroadcastMeCommand extends RangeCommand
     @Override
     public void Execute(String string, TreeMap<String, String> formatAnswerMap)
     {
-        // 해석한거 이용해서 그 클라한테만
         int clientNumber = Integer.parseInt(formatAnswerMap.get("ClientNumber"));
         try
         {

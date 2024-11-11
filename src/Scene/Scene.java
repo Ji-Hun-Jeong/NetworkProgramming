@@ -6,9 +6,9 @@ import javax.swing.*;
 
 public class Scene
 {
-    protected Scene(String name, ClientDelegator clientCommunicator, int width, int height, int x, int y)
+    protected Scene(String name, ClientDelegator clientDelegator, int width, int height, int x, int y)
     {
-        m_ClientCommunicator = clientCommunicator;
+        m_ClientDelegator = clientDelegator;
         m_SceneName = name;
         m_MainGUI = new JFrame(m_SceneName);
         m_ScreenWidth = width;
@@ -26,7 +26,7 @@ public class Scene
     public String GetName() { return m_SceneName; }
     public void SetVisible(boolean visible){ m_MainGUI.setVisible(visible); }
 
-    protected ClientDelegator m_ClientCommunicator = null;
+    protected ClientDelegator m_ClientDelegator = null;
     protected String m_SceneName = null;
     protected JFrame m_MainGUI = null;
     protected int m_ScreenWidth = 0;

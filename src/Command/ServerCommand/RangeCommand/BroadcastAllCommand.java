@@ -1,6 +1,5 @@
-package Command.RangeCommand;
+package Command.ServerCommand.RangeCommand;
 
-import Command.Command;
 import Main.Server;
 
 import java.io.IOException;
