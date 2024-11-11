@@ -1,8 +1,7 @@
 package Panel;
 
-import Command.*;
-import FormatBuilder_Client.*;
-import RangeBuilder_Client.RangeBuilder;
+import FormatBuilder.*;
+import Socket.Client;
 import Socket.ClientDelegator;
 
 import javax.swing.*;
@@ -42,11 +41,11 @@ class SendLogListener implements ActionListener
     private ClientDelegator m_ClientCommunicator = null;
     private ClientBuilder m_ChatBuilder = null;
 }
-public class ChatAreaPanel extends JPanel
+public class ChatAreaPanel extends MyPanel
 {
-    public ChatAreaPanel(ClientDelegator clientCommunicator, ServerBuilder serverBuilder, int width, int height)
+    public ChatAreaPanel(ClientDelegator clientDelegator, ServerBuilder serverBuilder, int width, int height)
     {
-        m_ClientCommunicator = clientCommunicator;
+        super(clientDelegator);
         setSize(new Dimension(width, height));
         setLayout(null);
 
@@ -54,15 +53,15 @@ public class ChatAreaPanel extends JPanel
         m_LogArea.setLocation(0, 0);
         m_LogArea.setEditable(false);
 
-        m_ChatBuilder = new ClientBuilder(serverBuilder, "Chat");
+        m_ChatBuilder = new ClientBuilder("ChatAll", Client.m_NumOfClient);
 
         m_InputArea.setSize(width * 7 / 10, height / 10);
         m_InputArea.setLocation(0, height * 8 / 10);
-        m_InputArea.addActionListener(new SendLogListener(m_ClientCommunicator, m_ChatBuilder, m_InputArea, m_LogArea));
+        m_InputArea.addActionListener(new SendLogListener(m_ClientDelegator, m_ChatBuilder, m_InputArea, m_LogArea));
 
         m_SendButton.setSize(new Dimension(width * 2 / 10, height / 10));
         m_SendButton.setLocation(width * 7 / 10, height * 8 / 10);
-        m_SendButton.addActionListener(new SendLogListener(m_ClientCommunicator, m_ChatBuilder, m_InputArea, m_LogArea));
+        m_SendButton.addActionListener(new SendLogListener(m_ClientDelegator, m_ChatBuilder, m_InputArea, m_LogArea));
 
         add(m_LogArea);
         add(m_InputArea);
@@ -71,7 +70,6 @@ public class ChatAreaPanel extends JPanel
     public JTextArea GetTextArea(){ return m_LogArea; }
 
     private static int m_NumOfPanel = 0;
-    private ClientDelegator m_ClientCommunicator = null;
     private ClientBuilder m_ChatBuilder = null;
 
     private JTextArea m_LogArea = new JTextArea();

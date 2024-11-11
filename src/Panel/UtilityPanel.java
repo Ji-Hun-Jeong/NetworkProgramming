@@ -1,7 +1,8 @@
 package Panel;
 
-import FormatBuilder_Client.ClientBuilder;
-import FormatBuilder_Client.ServerBuilder;
+import FormatBuilder.ClientBuilder;
+import FormatBuilder.ServerBuilder;
+import Socket.Client;
 import Socket.ClientDelegator;
 
 import javax.swing.*;
@@ -132,20 +133,20 @@ class MakeRoomListener implements ActionListener
     private ClientBuilder m_MakeRoomBuilder = null;
     private MakeRoomFrame m_MakeRoomFrame = null;
 }
-public class UtilityPanel extends JPanel
+public class UtilityPanel extends MyPanel
 {
     public UtilityPanel(ClientDelegator clientDelegator, ServerBuilder serverBuilder)
     {
-        m_ClientCommunicator = clientDelegator;
-        m_MakeRoomBuilder = new ClientBuilder(serverBuilder, "MakeRoom");
+        super(clientDelegator);
+        m_ClientDelegator = clientDelegator;
+        m_MakeRoomBuilder = new ClientBuilder("MakeRoom", Client.m_NumOfClient);
 
         m_MakeRoomButton.setSize(new Dimension(100,50));
         m_MakeRoomButton.setText("방 만들기");
-        m_MakeRoomButton.addActionListener(new MakeRoomListener(m_ClientCommunicator, m_MakeRoomBuilder));
+        m_MakeRoomButton.addActionListener(new MakeRoomListener(m_ClientDelegator, m_MakeRoomBuilder));
         add(m_MakeRoomButton);
     }
     private JButton m_MakeRoomButton = new JButton();
 
-    private ClientDelegator m_ClientCommunicator = null;
     private ClientBuilder m_MakeRoomBuilder = null;
 }

@@ -1,11 +1,18 @@
 package Main;
 
-import Command.BroadcastAllCommand;
+import Command.RangeCommand.BroadcastAllCommand;
+import Command.RangeCommand.BroadcastMeCommand;
+import Command.RangeCommand.RangeCommand;
+import Command.ServerCommand.BasicServerCommand;
+import Command.ServerCommand.GiveClientNumberCommand;
+import Command.ServerCommand.ServerCommand;
 import Interpreter.Interpreter;
 import Socket.ServerDelegator;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.TreeMap;
 
 public class Server
@@ -14,36 +21,56 @@ public class Server
     {
         m_ServerSocket = new ServerSocket(portNum);
 
-        m_ServerInterpreter.AddCommand("All", new BroadcastAllCommand(this));
+        RangeCommand broadCastAllCommand = new BroadcastAllCommand(this);
+
+        ServerCommand serverCommand = new BasicServerCommand(broadCastAllCommand);
+
+        m_ServerInterpreter.AddCommand("MakeRoom", serverCommand);
+
+        m_ServerInterpreter.AddCommand("ChatAll", serverCommand);
+
+        serverCommand = new BasicServerCommand(new BroadcastMeCommand(this));
+        m_ServerInterpreter.AddCommand("ChangeScene", serverCommand);
+
+        serverCommand = new GiveClientNumberCommand(new BroadcastMeCommand(this));
+        m_ServerInterpreter.AddCommand("SetClientNumber", serverCommand);
+
     }
     public void NotifyAllClient(String str) throws IOException
     {
-        for(int i=0; i < m_MapClientCommunicator.size(); ++i)
+        for(int i = 0; i < m_MapClientDelegator.size(); ++i)
         {
-            m_MapClientCommunicator.get(i).SendData(str);
+            m_MapClientDelegator.get(i).SendData(str);
         }
     }
-    public synchronized void SendMessage(String string)
+    public void NotifySpecifyClient(String str, int numOfClient) throws IOException
     {
-        m_ServerInterpreter.Interpret(string, "ServerData");
+        m_MapClientDelegator.get(numOfClient).SendData(str);
+    }
+    public synchronized void InterpretAndOperateCommand(String string)
+    {
+        m_ServerInterpreter.Interpret(string, "ClientData");
     }
 
     public static void main(String[] args) throws IOException
     {
         Server mainServer = new Server(9999);
         Socket socket = null;
-        ServerDelegator serverCommunicator = null;
+        ServerDelegator serverDelegator = null;
         Thread readThread = null;
+
         while(true)
         {
             try
             {
                 socket = mainServer.m_ServerSocket.accept();
-                serverCommunicator = new ServerDelegator(socket, mainServer);
-                mainServer.m_MapClientCommunicator.put(mainServer.m_NumOfClient++, serverCommunicator);
+                serverDelegator = new ServerDelegator(socket, mainServer);
+                mainServer.m_MapClientDelegator.put(mainServer.m_NumOfClient, serverDelegator);
+                mainServer.m_NumOfClientSaveQueue.add(mainServer.m_NumOfClient++);
 
-                readThread = new Thread(serverCommunicator);
+                readThread = new Thread(serverDelegator);
                 readThread.start();
+
             }
             catch (IOException e)
             {
@@ -51,11 +78,15 @@ public class Server
             }
         }
     }
-
-    private TreeMap<Integer, ServerDelegator> m_MapClientCommunicator = new TreeMap<Integer, ServerDelegator>();
-    private Interpreter m_ServerInterpreter = new Interpreter();
+    public int GetFrontClientNumberByQueue()
+    {
+        int clientNumber = m_NumOfClientSaveQueue.poll();
+        return clientNumber;
+    }
+    private Queue<Integer> m_NumOfClientSaveQueue = new LinkedList<Integer>();
+    private TreeMap<Integer, ServerDelegator> m_MapClientDelegator = new TreeMap<Integer, ServerDelegator>();
+    private Interpreter<ServerCommand> m_ServerInterpreter = new Interpreter<ServerCommand>();
     private ServerSocket m_ServerSocket = null;
     private int m_NumOfClient = 0;
-
 
 }

@@ -29,7 +29,7 @@ public class ServerDelegator extends SocketDelegator
                         break;
                 }
 
-                m_OwnerServer.SendMessage(sendString);
+                m_OwnerServer.InterpretAndOperateCommand(sendString);
                 sendString = "";
             }
             catch (IOException e)
@@ -39,4 +39,5 @@ public class ServerDelegator extends SocketDelegator
         }
     }
     private Server m_OwnerServer = null;
+
 }

@@ -1,15 +1,16 @@
-package Command;
+package Command.RangeCommand;
 
+import Command.Command;
 import Main.Server;
 
 import java.io.IOException;
 import java.util.TreeMap;
 
-public class BroadcastAllCommand implements Command
+public class BroadcastAllCommand extends RangeCommand
 {
     public BroadcastAllCommand(Server server)
     {
-        m_Server = server;
+        super(server);
     }
     @Override
     public void Execute(String string, TreeMap<String, String> formatAnswerMap)
@@ -23,5 +24,4 @@ public class BroadcastAllCommand implements Command
             throw new RuntimeException(e);
         }
     }
-    private Server m_Server = null;
 }

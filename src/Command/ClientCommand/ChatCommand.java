@@ -1,12 +1,12 @@
-package Command;
+package Command.ClientCommand;
 
-import Interpreter.Interpreter;
+import Command.Command;
 
 import javax.swing.*;
 import java.util.TreeMap;
 import java.util.Vector;
 
-public class ChatCommand implements Command
+public class ChatCommand implements ClientCommand
 {
     @Override
     public void Execute(String formatString, TreeMap<String, String> formatAnswerMap)

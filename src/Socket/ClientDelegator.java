@@ -3,6 +3,7 @@ package Socket;
 import java.io.IOException;
 import java.net.Socket;
 
+import Command.ClientCommand.ClientCommand;
 import Command.Command;
 import Interpreter.Interpreter;
 
@@ -28,7 +29,7 @@ public class ClientDelegator extends SocketDelegator
                     if(string.equals("<END>"))
                         break;
                 }
-                m_ClientInterpreter.Interpret(receiveString, "ClientData");
+                m_ClientInterpreter.Interpret(receiveString, "ServerData");
                 receiveString = "";
             }
             catch (IOException e)
@@ -37,9 +38,9 @@ public class ClientDelegator extends SocketDelegator
             }
         }
     }
-    public boolean AddCommand(String commandName, Command command)
+    public boolean AddCommand(String commandName, ClientCommand command)
     {
         return m_ClientInterpreter.AddCommand(commandName, command);
     }
-    private Interpreter m_ClientInterpreter = new Interpreter();
+    private Interpreter<ClientCommand> m_ClientInterpreter = new Interpreter<ClientCommand>();
 }

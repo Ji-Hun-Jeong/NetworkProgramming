@@ -19,8 +19,8 @@ public class SceneMgr
     {
         Scene appearScene = m_MapScene.get(appearSceneName);
         Scene disappearScene = m_MapScene.get(disappearSceneName);
-        appearScene.SetVisible(false);
-        disappearScene.SetVisible(true);
+        appearScene.SetVisible(true);
+        disappearScene.SetVisible(false);
     }
     public Scene GetScene(String sceneName){ return m_MapScene.get(sceneName); }
 

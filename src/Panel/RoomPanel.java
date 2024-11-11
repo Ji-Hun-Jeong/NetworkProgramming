@@ -2,35 +2,60 @@ package Panel;
 
 import javax.swing.*;
 
-import Main.SceneMgr;
+import FormatBuilder.ClientBuilder;
+import FormatBuilder.ServerBuilder;
+import Socket.Client;
+import Socket.ClientDelegator;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 
 class EnterRoomActionListener extends MouseAdapter
 {
+    public EnterRoomActionListener(ClientDelegator clientDelegator)
+    {
+        m_ClientDelegator = clientDelegator;
+        m_ChangeSceneBuilder = new ClientBuilder("ChangeScene", Client.m_NumOfClient);
+        m_ChangeSceneBuilder.AddFormatString("AppearScene:GameScene");
+        m_ChangeSceneBuilder.AddFormatString("DisappearScene:WaitingScene");
+    }
     @Override
     public void mouseClicked(MouseEvent e)
     {
         if(e.getClickCount() == 2)
-            SceneMgr.GetInst().ChangeScene("WaitingScene", "GameScene");
+        {
+            String formatString = m_ChangeSceneBuilder.Build();
+            try
+            {
+                m_ClientDelegator.SendData(formatString);
+            }
+            catch (IOException ex)
+            {
+                throw new RuntimeException(ex);
+            }
+        }
     }
+    private ClientDelegator m_ClientDelegator = null;
+    private ClientBuilder m_ChangeSceneBuilder = null;
 }
-public class RoomPanel extends JPanel
+public class RoomPanel extends MyPanel
 {
-    public RoomPanel(String roomName, String usePassword, String passWord, int numofMasterClient,
+    public RoomPanel(ClientDelegator clientDelegator, String roomName, String usePassword, String passWord, int numofMasterClient,
                      int groupNum , int width, int height)
     {
+        super(clientDelegator);
         m_RoomName = roomName;
         m_UsePassword = usePassword.equals("True") ? true : false;
         m_Password = passWord;
         m_NumOfMasterClient = numofMasterClient;
         m_GroupNum = groupNum;
         m_CountOfClient += 1;
+
         setPreferredSize(new Dimension(width,height));
         setBackground(Color.RED);
-        addMouseListener(new EnterRoomActionListener());
+        addMouseListener(new EnterRoomActionListener(m_ClientDelegator));
 
         String labelText = "<html>" + m_RoomName + "<br>";
 

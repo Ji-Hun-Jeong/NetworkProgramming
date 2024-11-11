@@ -2,11 +2,12 @@ package Scene;
 
 import java.awt.*;
 
-import Command.*;
-import FormatBuilder_Client.ServerBuilder;
+import Command.ClientCommand.ChangeSceneCommand;
+import Command.ClientCommand.ChatCommand;
+import Command.ClientCommand.MakeRoomCommand;
+import FormatBuilder.ServerBuilder;
 import Panel.*;
-import RangeBuilder_Client.AllRangeBuilder;
-import RangeBuilder_Client.RangeBuilder;
+import Socket.Client;
 import Socket.ClientDelegator;
 
 public class WaitingScene extends Scene
@@ -16,9 +17,9 @@ public class WaitingScene extends Scene
         super("WaitingScene", clientCommunicator, width, height, x, y);
         m_MainGUI.setLayout(null);
 
-        ServerBuilder serverBuilder = new ServerBuilder("All");
+        ServerBuilder serverBuilder = new ServerBuilder("SendAllWithOutChanging", Client.m_NumOfClient);
 
-        m_RoomPanel = new RoomManagerPanel();
+        m_RoomPanel = new RoomManagerPanel(m_ClientCommunicator);
         m_RoomPanel.setSize(m_ScreenWidth * 3 / 5, m_ScreenHeight);
         m_RoomPanel.setLocation(0, 0);
         m_RoomPanel.setLayout(new FlowLayout());
@@ -44,7 +45,10 @@ public class WaitingScene extends Scene
 
         ChatCommand chatCommand = new ChatCommand();
         chatCommand.AddExecuteTextArea(m_ChatArea.GetTextArea());
-        m_ClientCommunicator.AddCommand("Chat", chatCommand);
+        m_ClientCommunicator.AddCommand("ChatAll", chatCommand);
+
+        ChangeSceneCommand changeSceneCommand = new ChangeSceneCommand();
+        m_ClientCommunicator.AddCommand("ChangeScene", changeSceneCommand);
 
     }
     private RoomManagerPanel m_RoomPanel = null;
