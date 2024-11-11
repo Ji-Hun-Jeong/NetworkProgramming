@@ -15,13 +15,21 @@ public class ClientDelegator extends SocketDelegator
     @Override
     public void run()
     {
-        String string;
+        String string = "";
+        String receiveString = "";
         while(true)
         {
             try
             {
-                string = m_Reader.readLine();
-                m_ClientInterpreter.Interpret(string);
+                while(true)
+                {
+                    string = m_Reader.readLine();
+                    receiveString = receiveString.concat(string + "\n");
+                    if(string.equals("<END>"))
+                        break;
+                }
+                m_ClientInterpreter.Interpret(receiveString, "ClientData");
+                receiveString = "";
             }
             catch (IOException e)
             {
@@ -32,10 +40,6 @@ public class ClientDelegator extends SocketDelegator
     public boolean AddCommand(String commandName, Command command)
     {
         return m_ClientInterpreter.AddCommand(commandName, command);
-    }
-    public Command GetCommand(String commandName)
-    {
-        return m_ClientInterpreter.GetCommand(commandName);
     }
     private Interpreter m_ClientInterpreter = new Interpreter();
 }

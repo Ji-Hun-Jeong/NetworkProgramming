@@ -25,7 +25,7 @@ public class Server
     }
     public synchronized void SendMessage(String string)
     {
-        m_ServerInterpreter.Interpret(string);
+        m_ServerInterpreter.Interpret(string, "ServerData");
     }
 
     public static void main(String[] args) throws IOException

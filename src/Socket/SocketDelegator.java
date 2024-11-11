@@ -13,7 +13,7 @@ public abstract class SocketDelegator implements Runnable
     }
     public void SendData(String string) throws IOException
     {
-        m_Writer.write(string+"\n");
+        m_Writer.write(string + "\n");
         m_Writer.flush();
     }
     protected Socket m_Socket = null;

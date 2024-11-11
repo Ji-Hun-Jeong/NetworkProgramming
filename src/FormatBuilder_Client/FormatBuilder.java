@@ -2,23 +2,28 @@ package FormatBuilder_Client;
 
 import RangeBuilder_Client.RangeBuilder;
 
-public class FormatBuilder
+import java.util.ArrayList;
+
+public abstract class FormatBuilder
 {
-    public FormatBuilder(RangeBuilder rangeBuilder, String commandName)
+    protected FormatBuilder(String command)
     {
-        m_RangeBuilder = rangeBuilder;
-        m_CommandName = commandName;
+        m_Command = command;
     }
-    public String Build()
+    public abstract String Build();
+    protected String attachFormatString()
     {
-        String result = m_RangeBuilder.Build() +
-                "Command : " + m_CommandName + ",";
+        String result = "";
+
+        for(int i=0; i < m_ArrFormatString.size(); ++i)
+            result = result.concat(",\n"+m_ArrFormatString.get(i));
+
         return result;
     }
-    public String GetCommandName()
+    public void AddFormatString(String formatString)
     {
-        return m_CommandName;
+        m_ArrFormatString.add(formatString);
     }
-    protected RangeBuilder m_RangeBuilder = null;
-    protected String m_CommandName = null;
+    protected ArrayList<String> m_ArrFormatString = new ArrayList<String>();
+    protected String m_Command = null;
 }

@@ -13,7 +13,7 @@ import java.io.IOException;
 
 class SendLogListener implements ActionListener
 {
-    public SendLogListener(ClientDelegator clientCommunicator, ChatBuilder chatBuilder, JTextField inputArea, JTextArea logArea)
+    public SendLogListener(ClientDelegator clientCommunicator, ClientBuilder chatBuilder, JTextField inputArea, JTextArea logArea)
     {
         m_ClientCommunicator = clientCommunicator;
         m_ChatBuilder = chatBuilder;
@@ -24,8 +24,9 @@ class SendLogListener implements ActionListener
     public void actionPerformed(ActionEvent e)
     {
         String inputText = m_InputArea.getText();
-        m_ChatBuilder.SetChatString(inputText);
+        m_ChatBuilder.AddFormatString("Chat Log:" + inputText);
         String formatString = m_ChatBuilder.Build();
+
         try
         {
             m_ClientCommunicator.SendData(formatString);
@@ -39,11 +40,11 @@ class SendLogListener implements ActionListener
     private JTextField m_InputArea = null;
     private JTextArea m_LogArea = null;
     private ClientDelegator m_ClientCommunicator = null;
-    private ChatBuilder m_ChatBuilder = null;
+    private ClientBuilder m_ChatBuilder = null;
 }
 public class ChatAreaPanel extends JPanel
 {
-    public ChatAreaPanel(ClientDelegator clientCommunicator, RangeBuilder rangeBuilder, int width, int height)
+    public ChatAreaPanel(ClientDelegator clientCommunicator, ServerBuilder serverBuilder, int width, int height)
     {
         m_ClientCommunicator = clientCommunicator;
         setSize(new Dimension(width, height));
@@ -53,7 +54,7 @@ public class ChatAreaPanel extends JPanel
         m_LogArea.setLocation(0, 0);
         m_LogArea.setEditable(false);
 
-        m_ChatBuilder = new ChatBuilder(rangeBuilder);
+        m_ChatBuilder = new ClientBuilder(serverBuilder, "Chat");
 
         m_InputArea.setSize(width * 7 / 10, height / 10);
         m_InputArea.setLocation(0, height * 8 / 10);
@@ -71,7 +72,7 @@ public class ChatAreaPanel extends JPanel
 
     private static int m_NumOfPanel = 0;
     private ClientDelegator m_ClientCommunicator = null;
-    private ChatBuilder m_ChatBuilder = null;
+    private ClientBuilder m_ChatBuilder = null;
 
     private JTextArea m_LogArea = new JTextArea();
     private JTextField m_InputArea = new JTextField();

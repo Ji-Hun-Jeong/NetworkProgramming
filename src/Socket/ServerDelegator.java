@@ -15,13 +15,22 @@ public class ServerDelegator extends SocketDelegator
     @Override
     public void run()
     {
-        String string;
+        String string = "";
+        String sendString = "";
         while(true)
         {
             try
             {
-                string = m_Reader.readLine();
-                m_OwnerServer.SendMessage(string);
+                while(true)
+                {
+                    string = m_Reader.readLine();
+                    sendString = sendString.concat(string + "\n");
+                    if(string.equals("<END>"))
+                        break;
+                }
+
+                m_OwnerServer.SendMessage(sendString);
+                sendString = "";
             }
             catch (IOException e)
             {

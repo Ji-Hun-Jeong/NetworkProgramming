@@ -3,6 +3,7 @@ package Scene;
 import java.awt.*;
 
 import Command.*;
+import FormatBuilder_Client.ServerBuilder;
 import Panel.*;
 import RangeBuilder_Client.AllRangeBuilder;
 import RangeBuilder_Client.RangeBuilder;
@@ -15,19 +16,19 @@ public class WaitingScene extends Scene
         super("WaitingScene", clientCommunicator, width, height, x, y);
         m_MainGUI.setLayout(null);
 
-        RangeBuilder allRangeBuilder = new AllRangeBuilder();
+        ServerBuilder serverBuilder = new ServerBuilder("All");
 
         m_RoomPanel = new RoomManagerPanel();
         m_RoomPanel.setSize(m_ScreenWidth * 3 / 5, m_ScreenHeight);
         m_RoomPanel.setLocation(0, 0);
         m_RoomPanel.setLayout(new FlowLayout());
 
-        m_UtilityPanel = new UtilityPanel(m_ClientCommunicator, allRangeBuilder);
+        m_UtilityPanel = new UtilityPanel(m_ClientCommunicator, serverBuilder);
         m_UtilityPanel.setSize(m_ScreenWidth / 5, m_ScreenHeight);
         m_UtilityPanel.setLocation(m_ScreenWidth * 3 / 5, 0);
         m_UtilityPanel.setBackground(Color.YELLOW);
 
-        m_ChatArea = new ChatAreaPanel(m_ClientCommunicator, allRangeBuilder,m_ScreenWidth / 5, m_ScreenHeight);
+        m_ChatArea = new ChatAreaPanel(m_ClientCommunicator, serverBuilder,m_ScreenWidth / 5, m_ScreenHeight);
         m_ChatArea.setLocation(m_ScreenWidth * 4 / 5, 0);
 
         m_MainGUI.add(m_RoomPanel);

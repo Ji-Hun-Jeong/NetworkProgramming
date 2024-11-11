@@ -3,6 +3,7 @@ package Command;
 import Main.Server;
 
 import java.io.IOException;
+import java.util.TreeMap;
 
 public class BroadcastAllCommand implements Command
 {
@@ -11,7 +12,7 @@ public class BroadcastAllCommand implements Command
         m_Server = server;
     }
     @Override
-    public void Execute(String string)
+    public void Execute(String string, TreeMap<String, String> formatAnswerMap)
     {
         try
         {
