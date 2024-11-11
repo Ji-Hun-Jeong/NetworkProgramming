@@ -14,7 +14,10 @@ public class FormatBuilder
         String result = m_RangeBuilder.Build() +
                 "Command : " + m_CommandName + ",";
         return result;
-        // 그룹채팅이 되려면?
+    }
+    public String GetCommandName()
+    {
+        return m_CommandName;
     }
     protected RangeBuilder m_RangeBuilder = null;
     protected String m_CommandName = null;

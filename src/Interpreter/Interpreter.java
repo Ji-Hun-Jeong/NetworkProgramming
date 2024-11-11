@@ -12,6 +12,7 @@ public class Interpreter
         String formatAnswer = InterpretFront(newString);
 
         m_MapCommand.get(formatAnswer).Execute(newString[0]);
+        // 서버 인터프리터 따로 만들자
     }
 
     public static String InterpretFront(String[] formatString)

@@ -1,13 +1,11 @@
 package Scene;
 
-import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 
-import FormatBuilder_Client.ChatBuilder;
-import Main.ChatArea;
-import Main.Room;
+import Command.*;
+import Panel.*;
 import RangeBuilder_Client.AllRangeBuilder;
+import RangeBuilder_Client.RangeBuilder;
 import Socket.ClientDelegator;
 
 public class WaitingScene extends Scene
@@ -17,39 +15,39 @@ public class WaitingScene extends Scene
         super("WaitingScene", clientCommunicator, width, height, x, y);
         m_MainGUI.setLayout(null);
 
+        RangeBuilder allRangeBuilder = new AllRangeBuilder();
+
+        m_RoomPanel = new RoomManagerPanel();
         m_RoomPanel.setSize(m_ScreenWidth * 3 / 5, m_ScreenHeight);
         m_RoomPanel.setLocation(0, 0);
         m_RoomPanel.setLayout(new FlowLayout());
 
-        m_UtilPanel.setSize(m_ScreenWidth / 5,m_ScreenHeight);
-        m_UtilPanel.setLocation(m_ScreenWidth * 3 / 5, 0);
-        m_UtilPanel.setBackground(Color.YELLOW);
-        m_MakeRoomButton.setPreferredSize(new Dimension(100,50));
-        m_MakeRoomButton.setText("방 만들기");
-        m_UtilPanel.add(m_MakeRoomButton);
+        m_UtilityPanel = new UtilityPanel(m_ClientCommunicator, allRangeBuilder);
+        m_UtilityPanel.setSize(m_ScreenWidth / 5, m_ScreenHeight);
+        m_UtilityPanel.setLocation(m_ScreenWidth * 3 / 5, 0);
+        m_UtilityPanel.setBackground(Color.YELLOW);
 
-        m_ChatPanel.setSize(m_ScreenWidth / 5,m_ScreenHeight);
-        m_ChatPanel.setLocation(m_ScreenWidth * 4 / 5, 0);
-
-        Dimension chatAreaSize = m_ChatPanel.getSize();
-        m_ChatArea = new ChatArea(m_ClientCommunicator, new ChatBuilder(new AllRangeBuilder()),chatAreaSize.width, chatAreaSize.height);
-        m_ChatPanel.add(m_ChatArea.GetMainArea());
+        m_ChatArea = new ChatAreaPanel(m_ClientCommunicator, allRangeBuilder,m_ScreenWidth / 5, m_ScreenHeight);
+        m_ChatArea.setLocation(m_ScreenWidth * 4 / 5, 0);
 
         m_MainGUI.add(m_RoomPanel);
-        m_MainGUI.add(m_UtilPanel);
-        m_MainGUI.add(m_ChatPanel);
+        m_MainGUI.add(m_UtilityPanel);
+        m_MainGUI.add(m_ChatArea);
+
+        SetCommand();
+    }
+    private void SetCommand()
+    {
+        MakeRoomCommand makeRoomcommand = new MakeRoomCommand(m_RoomPanel);
+        m_ClientCommunicator.AddCommand("MakeRoom", makeRoomcommand);
+
+        ChatCommand chatCommand = new ChatCommand();
+        chatCommand.AddExecuteTextArea(m_ChatArea.GetTextArea());
+        m_ClientCommunicator.AddCommand("Chat", chatCommand);
 
     }
-    public void AddRoom(Room room)
-    {
-        m_ArrRoom.add(room);
-        m_RoomPanel.add(room.GetMainArea());
-        m_MainGUI.setVisible(true);
-    }
-    private ArrayList<Room> m_ArrRoom = new ArrayList<Room>();
-    private ChatArea m_ChatArea = null;
-    private JPanel m_RoomPanel = new JPanel();
-    private JPanel m_UtilPanel = new JPanel();
-    private JButton m_MakeRoomButton = new JButton();
-    private JPanel m_ChatPanel = new JPanel();
+    private RoomManagerPanel m_RoomPanel = null;
+    private ChatAreaPanel m_ChatArea = null;
+    private UtilityPanel m_UtilityPanel = null;
+
 }

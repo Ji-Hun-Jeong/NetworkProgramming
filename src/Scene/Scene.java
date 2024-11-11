@@ -19,8 +19,10 @@ public class Scene
 
         m_MainGUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
+
     public int GetScreenWidth() { return m_ScreenWidth; }
     public int GetScreenHeight() { return m_ScreenHeight; }
+
     public String GetName() { return m_SceneName; }
     public void SetVisible(boolean visible){ m_MainGUI.setVisible(visible); }
 

@@ -1,5 +1,7 @@
 package Socket;
 
+import Main.Server;
+
 import java.io.*;
 import java.net.Socket;
 

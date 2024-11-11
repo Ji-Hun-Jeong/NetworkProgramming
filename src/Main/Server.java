@@ -1,8 +1,8 @@
-package Socket;
+package Main;
 
 import Command.BroadcastAllCommand;
 import Interpreter.Interpreter;
-
+import Socket.ServerDelegator;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;

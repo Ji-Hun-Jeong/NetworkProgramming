@@ -1,6 +1,6 @@
 package Command;
 
-import Socket.Server;
+import Main.Server;
 
 import java.io.IOException;
 

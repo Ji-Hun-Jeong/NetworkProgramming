@@ -1,7 +1,8 @@
-package Main;
+package Panel;
 
 import Command.*;
 import FormatBuilder_Client.*;
+import RangeBuilder_Client.RangeBuilder;
 import Socket.ClientDelegator;
 
 import javax.swing.*;
@@ -40,21 +41,19 @@ class SendLogListener implements ActionListener
     private ClientDelegator m_ClientCommunicator = null;
     private ChatBuilder m_ChatBuilder = null;
 }
-public class ChatArea extends JPanel
+public class ChatAreaPanel extends JPanel
 {
-    public ChatArea(ClientDelegator clientCommunicator, ChatBuilder chatBuilder, int width, int height)
+    public ChatAreaPanel(ClientDelegator clientCommunicator, RangeBuilder rangeBuilder, int width, int height)
     {
         m_ClientCommunicator = clientCommunicator;
-        m_ChatBuilder = chatBuilder;
-        m_MainArea.setPreferredSize(new Dimension(width, height));
-        m_MainArea.setLayout(null);
+        setSize(new Dimension(width, height));
+        setLayout(null);
 
         m_LogArea.setSize(width,height * 8 / 10);
         m_LogArea.setLocation(0, 0);
         m_LogArea.setEditable(false);
 
-        Command command = new ChatCommand(m_LogArea);
-        m_ClientCommunicator.AddCommand("Chat", command);
+        m_ChatBuilder = new ChatBuilder(rangeBuilder);
 
         m_InputArea.setSize(width * 7 / 10, height / 10);
         m_InputArea.setLocation(0, height * 8 / 10);
@@ -64,17 +63,16 @@ public class ChatArea extends JPanel
         m_SendButton.setLocation(width * 7 / 10, height * 8 / 10);
         m_SendButton.addActionListener(new SendLogListener(m_ClientCommunicator, m_ChatBuilder, m_InputArea, m_LogArea));
 
-        m_MainArea.add(m_LogArea);
-        m_MainArea.add(m_InputArea);
-        m_MainArea.add(m_SendButton);
+        add(m_LogArea);
+        add(m_InputArea);
+        add(m_SendButton);
     }
-    public void AddChat(String chat){ m_LogArea.append(chat); }
-    public JPanel GetMainArea(){ return m_MainArea; }
+    public JTextArea GetTextArea(){ return m_LogArea; }
 
+    private static int m_NumOfPanel = 0;
     private ClientDelegator m_ClientCommunicator = null;
     private ChatBuilder m_ChatBuilder = null;
 
-    private JPanel m_MainArea = new JPanel();
     private JTextArea m_LogArea = new JTextArea();
     private JTextField m_InputArea = new JTextField();
     private JButton m_SendButton = new JButton("전송");

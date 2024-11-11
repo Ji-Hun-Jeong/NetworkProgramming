@@ -1,22 +1,21 @@
 package Command;
 
+import Interpreter.Interpreter;
+
 import javax.swing.*;
+import java.util.Vector;
 
 public class ChatCommand implements Command
 {
-    public ChatCommand(JTextArea logArea)
-    {
-        m_LogArea = logArea;
-    }
     @Override
     public void Execute(String string)
     {
-        String chatLogFormat = "Chat Log : ";
-        int startIdx = string.indexOf(chatLogFormat) + chatLogFormat.length();
-        int finishIdx = string.indexOf(",");
-        String chat = string.substring(startIdx, finishIdx);
+        String[] str = {string};
+        String chatLog = Interpreter.InterpretFront(str);
 
-        m_LogArea.append(chat+"\n");
+        for(int i=0; i < m_VecLogArea.size(); ++i)
+            m_VecLogArea.get(i).append(chatLog+"\n");
     }
-    private JTextArea m_LogArea = null;
+    public void AddExecuteTextArea(JTextArea textArea){ m_VecLogArea.add(textArea); }
+    private Vector<JTextArea> m_VecLogArea = new Vector<JTextArea>();
 }
