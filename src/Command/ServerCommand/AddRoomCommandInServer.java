@@ -2,23 +2,25 @@ package Command.ServerCommand;
 
 import Command.ServerCommand.RangeCommand.RangeCommand;
 import FormatBuilder.ServerBuilder;
+import Info.RoomInfo;
 import Main.Server;
 
 import java.util.TreeMap;
 
-public class GiveClientNumberCommand extends  ServerCommand
+public class AddRoomCommandInServer extends ServerCommand
 {
-    public GiveClientNumberCommand(RangeCommand rangeCommand)
+    public AddRoomCommandInServer(RangeCommand rangeCommand, RoomInfo roomInfo)
     {
-        super(rangeCommand);
+        super(rangeCommand, "MakeRoom");
+        m_RoomInfo = roomInfo;
     }
 
     @Override
     protected void ServerExecute(ServerBuilder serverBuilder, TreeMap<String, String> formatAnswerMap)
     {
         Server server = m_RangeCommand.GetServer();
-        int clientNumber = server.GetFrontClientNumberByQueue();
-        serverBuilder.SetNumOfClient(clientNumber);
-        formatAnswerMap.put("ClientNumber", String.valueOf(clientNumber));
+
+        RoomInfo.MakeRoomFormatString(serverBuilder, m_RoomInfo);
     }
+    private RoomInfo m_RoomInfo = null;
 }

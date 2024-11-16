@@ -23,7 +23,7 @@ class SendLogListener implements ActionListener
     {
         String inputText = m_InputArea.getText();
         ClientBuilder chatBuilder = new ClientBuilder("ChatAll", Client.m_NumOfClient);
-        chatBuilder.AddFormatString("Chat Log:" + inputText);
+        chatBuilder.AddFormatString("Chat Log", inputText);
         String formatString = chatBuilder.Build();
 
         try

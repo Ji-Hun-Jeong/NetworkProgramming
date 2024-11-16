@@ -2,14 +2,16 @@ package Command.ServerCommand;
 
 import Command.ServerCommand.RangeCommand.RangeCommand;
 import FormatBuilder.ServerBuilder;
+import Info.RoomInfo;
+import Main.Server;
 
 import java.util.TreeMap;
 
-public class BasicServerCommand extends ServerCommand
+public class ChangeSceneCommandInServer extends ServerCommand
 {
-    public BasicServerCommand(RangeCommand rangeCommand)
+    public ChangeSceneCommandInServer(RangeCommand rangeCommand)
     {
-        super(rangeCommand);
+        super(rangeCommand, "ChangeScene");
     }
 
     @Override

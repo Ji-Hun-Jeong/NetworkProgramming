@@ -78,10 +78,15 @@ class MakeRoomFrame extends JFrame
                 m_Password = m_PasswordTextArea.getText();
 
                 ClientBuilder makeRoomBuilder = new ClientBuilder("MakeRoom", Client.m_NumOfClient);
-                makeRoomBuilder.AddFormatString("RoomName:" + m_RoomName);
-                makeRoomBuilder.AddFormatString("UsePassword:" + m_UsePassword);
+                makeRoomBuilder.AddFormatString("RoomName", m_RoomName);
+                makeRoomBuilder.AddFormatString("UsePassword", m_UsePassword);
                 if(m_UsePasswordCheckBox.isSelected())
-                    makeRoomBuilder.AddFormatString("Password:" + m_Password);
+                    makeRoomBuilder.AddFormatString("Password", m_Password);
+                makeRoomBuilder.AddFormatString("MaxClient", "2");
+                makeRoomBuilder.AddFormatString("ClientCount", "0");
+                makeRoomBuilder.AddFormatString("MasterNumber", String.valueOf(Client.m_NumOfClient));
+                makeRoomBuilder.AddFormatString("AppearScene", "ReadyScene");
+                makeRoomBuilder.AddFormatString("DisappearScene", "WaitingScene");
 
                 String formatString = makeRoomBuilder.Build();
 
@@ -132,7 +137,7 @@ class MakeRoomListener implements ActionListener
 }
 public class UtilityPanel extends MyPanel
 {
-    public UtilityPanel(ClientDelegator clientDelegator, ServerBuilder serverBuilder)
+    public UtilityPanel(ClientDelegator clientDelegator)
     {
         super(clientDelegator);
         m_ClientDelegator = clientDelegator;

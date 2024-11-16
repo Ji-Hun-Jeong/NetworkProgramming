@@ -1,11 +1,10 @@
 package Command.ClientCommand;
 
-import Main.SceneMgr;
 import Socket.Client;
 
 import java.util.TreeMap;
 
-public class SetClientNumberCommand implements ClientCommand
+public class SetClientNumberCommandInClient implements ClientCommand
 {
     @Override
     public void Execute(String formatString, TreeMap<String, String> formatAnswerMap)

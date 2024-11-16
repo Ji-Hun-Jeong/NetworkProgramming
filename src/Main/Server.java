@@ -1,11 +1,11 @@
 package Main;
 
+import Command.ServerCommand.*;
 import Command.ServerCommand.RangeCommand.BroadcastAllCommand;
 import Command.ServerCommand.RangeCommand.BroadcastMeCommand;
+import Command.ServerCommand.RangeCommand.BroadcastRoomCommand;
 import Command.ServerCommand.RangeCommand.RangeCommand;
-import Command.ServerCommand.BasicServerCommand;
-import Command.ServerCommand.GiveClientNumberCommand;
-import Command.ServerCommand.ServerCommand;
+import Info.RoomInfo;
 import Interpreter.Interpreter;
 import Socket.ServerDelegator;
 import java.io.IOException;
@@ -22,21 +22,31 @@ public class Server
         m_ServerSocket = new ServerSocket(portNum);
 
         RangeCommand broadCastAllCommand = new BroadcastAllCommand(this);
-
-        ServerCommand serverCommand = new BasicServerCommand(broadCastAllCommand);
-
-        m_ServerInterpreter.AddCommand("MakeRoom", serverCommand);
-
-        m_ServerInterpreter.AddCommand("ChatAll", serverCommand);
-
         RangeCommand broadCastMeCommand = new BroadcastMeCommand(this);
+        RangeCommand broadCastRoomCommand = new BroadcastRoomCommand(this);
 
-        serverCommand = new BasicServerCommand(broadCastMeCommand);
-        m_ServerInterpreter.AddCommand("ChangeScene", serverCommand);
+        ServerCommand changeSceneMeCommand = new ChangeSceneCommandInServer(broadCastMeCommand);
+        ServerCommand chatAllCommand = new ChatCommandInServer(broadCastAllCommand);
+        ServerCommand giveClientNumberMeCommand = new SetClientNumberCommandInServer(broadCastMeCommand);
+        ServerCommand getRoomsMeCommand = new GetRoomsCommandInServer(broadCastMeCommand);
 
-        serverCommand = new GiveClientNumberCommand(broadCastMeCommand);
-        m_ServerInterpreter.AddCommand("SetClientNumber", serverCommand);
+        ServerCommand enterRoomAll_ChangeSceneMe = new EnterRoomCommandInServer(broadCastAllCommand);
+        enterRoomAll_ChangeSceneMe.AddExtraCommand(changeSceneMeCommand);
 
+        ServerCommand makeRoomAll_EnterRoomMeCommand = new MakeRoomCommandInServer(broadCastAllCommand);
+        makeRoomAll_EnterRoomMeCommand.AddExtraCommand(enterRoomAll_ChangeSceneMe);
+
+        m_ServerInterpreter.AddCommand("ChatAll", chatAllCommand);
+
+        m_ServerInterpreter.AddCommand("ChangeScene", changeSceneMeCommand);
+
+        m_ServerInterpreter.AddCommand("SetClientNumber", giveClientNumberMeCommand);
+
+        m_ServerInterpreter.AddCommand("MakeRoom", makeRoomAll_EnterRoomMeCommand);
+
+        m_ServerInterpreter.AddCommand("EnterRoom", enterRoomAll_ChangeSceneMe);
+
+        m_ServerInterpreter.AddCommand("GetRooms", getRoomsMeCommand);
     }
     public void NotifyAllClient(String str) throws IOException
     {
@@ -60,15 +70,15 @@ public class Server
         Socket socket = null;
         ServerDelegator serverDelegator = null;
         Thread readThread = null;
-
+        int m_ClientNumber = 0;
         while(true)
         {
             try
             {
                 socket = mainServer.m_ServerSocket.accept();
                 serverDelegator = new ServerDelegator(socket, mainServer);
-                mainServer.m_MapClientDelegator.put(mainServer.m_NumOfClient, serverDelegator);
-                mainServer.m_NumOfClientSaveQueue.add(mainServer.m_NumOfClient++);
+                mainServer.m_MapClientDelegator.put(m_ClientNumber, serverDelegator);
+                mainServer.m_NumOfClientSaveQueue.add(m_ClientNumber++);
 
                 readThread = new Thread(serverDelegator);
                 readThread.start();
@@ -85,10 +95,21 @@ public class Server
         int clientNumber = m_NumOfClientSaveQueue.poll();
         return clientNumber;
     }
+    public void AddRoomInfo(RoomInfo roomInfo)
+    {
+        m_MapRoomInfo.put(roomInfo.roomNumber, roomInfo);
+    }
+    public RoomInfo GetRoomInfo(int roomNumber)
+    {
+        return m_MapRoomInfo.get(roomNumber);
+    }
+    public TreeMap<Integer, RoomInfo> GetRoomInfoMap() { return m_MapRoomInfo; }
+
     private Queue<Integer> m_NumOfClientSaveQueue = new LinkedList<Integer>();
     private TreeMap<Integer, ServerDelegator> m_MapClientDelegator = new TreeMap<Integer, ServerDelegator>();
     private Interpreter<ServerCommand> m_ServerInterpreter = new Interpreter<ServerCommand>();
     private ServerSocket m_ServerSocket = null;
-    private int m_NumOfClient = 0;
+
+    private TreeMap<Integer, RoomInfo> m_MapRoomInfo = new TreeMap<>();
 
 }

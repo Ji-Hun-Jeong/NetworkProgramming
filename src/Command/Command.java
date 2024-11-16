@@ -1,5 +1,8 @@
 package Command;
 
+import Command.ServerCommand.ServerCommand;
+
+import java.util.ArrayList;
 import java.util.TreeMap;
 
 public interface Command

@@ -2,10 +2,9 @@ package Command.ClientCommand;
 
 import java.util.TreeMap;
 
-import Command.Command;
 import Main.SceneMgr;
 
-public class ChangeSceneCommand implements ClientCommand
+public class ChangeSceneCommandInClient implements ClientCommand
 {
     @Override
     public void Execute(String formatString, TreeMap<String, String> formatAnswerMap)

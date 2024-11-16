@@ -3,7 +3,7 @@ package Panel;
 import javax.swing.*;
 
 import FormatBuilder.ClientBuilder;
-import FormatBuilder.ServerBuilder;
+import Info.RoomInfo;
 import Socket.Client;
 import Socket.ClientDelegator;
 
@@ -14,20 +14,21 @@ import java.io.IOException;
 
 class EnterRoomActionListener extends MouseAdapter
 {
-    public EnterRoomActionListener(ClientDelegator clientDelegator)
+    public EnterRoomActionListener(ClientDelegator clientDelegator, RoomInfo roomInfo)
     {
         m_ClientDelegator = clientDelegator;
-
+        m_RoomInfo = roomInfo;
     }
     @Override
     public void mouseClicked(MouseEvent e)
     {
         if(e.getClickCount() == 2)
         {
-            ClientBuilder changeSceneBuilder = new ClientBuilder("ChangeScene", Client.m_NumOfClient);
-            changeSceneBuilder.AddFormatString("AppearScene:GameScene");
-            changeSceneBuilder.AddFormatString("DisappearScene:WaitingScene");
-            String formatString = changeSceneBuilder.Build();
+            ClientBuilder clientBuilder = new ClientBuilder("EnterRoom", Client.m_NumOfClient);
+            clientBuilder.AddFormatString("RoomNumber", String.valueOf(m_RoomInfo.roomNumber));
+            clientBuilder.AddFormatString("AppearScene", "ReadyScene");
+            clientBuilder.AddFormatString("DisappearScene", "WaitingScene");
+            String formatString = clientBuilder.Build();
             try
             {
                 m_ClientDelegator.SendData(formatString);
@@ -39,50 +40,41 @@ class EnterRoomActionListener extends MouseAdapter
         }
     }
     private ClientDelegator m_ClientDelegator = null;
+    private RoomInfo m_RoomInfo = null;
 }
 public class RoomPanel extends MyPanel
 {
-    public RoomPanel(ClientDelegator clientDelegator, String roomName, String usePassword, String passWord, int numOfMasterClient,
-                     int groupNum , int width, int height)
+    public RoomPanel(ClientDelegator clientDelegator, RoomInfo roomInfo, int width, int height)
     {
         super(clientDelegator);
-        m_RoomName = roomName;
-        m_UsePassword = usePassword.equals("True");
-        m_Password = passWord;
-        m_NumOfMasterClient = numOfMasterClient;
-        m_GroupNum = groupNum;
-        m_CountOfClient += 1;
+        m_RoomInfo = roomInfo;
 
         setPreferredSize(new Dimension(width,height));
         setBackground(Color.RED);
-        addMouseListener(new EnterRoomActionListener(m_ClientDelegator));
+        addMouseListener(new EnterRoomActionListener(m_ClientDelegator, m_RoomInfo));
 
-        String labelText = "<html>" + m_RoomName + "<br>";
+        add(m_Label);
+        ValidateInfo();
+    }
+    public void Refresh(RoomInfo roomInfo)
+    {
+        m_RoomInfo = roomInfo;
+        ValidateInfo();
+    }
+    public void ValidateInfo()
+    {
+        String labelText = "<html>" + m_RoomInfo.roomName + "<br>";
 
-        if(m_UsePassword)
-            labelText = labelText.concat(m_Password + "<br>");
+        if(m_RoomInfo.usePassword)
+            labelText = labelText.concat(m_RoomInfo.password + "<br>");
 
-        labelText = labelText.concat(String.valueOf(m_CountOfClient) + " / " + String.valueOf(m_CountOfMaxClient) + "<br>");
+        labelText = labelText.concat(String.valueOf(m_RoomInfo.countOfClient) + " / " + String.valueOf(m_RoomInfo.countOfMaxClient) + "<br>");
 
         m_Label.setText(labelText);
-        add(m_Label);
+        validate();
     }
-    public void AddClient(int numofOtherClient)
-    {
-        if(m_CountOfMaxClient <= m_CountOfClient)
-            return;
-        m_NumOfOtherClient = numofOtherClient;
-        m_CountOfClient += 1;
-    }
-    private String m_RoomName = null;
-    private String m_Password = null;
-    private boolean m_UsePassword = false;
-
-    private int m_CountOfMaxClient = 2;
-    private int m_CountOfClient = 0;
-    private int m_NumOfMasterClient = -1;
-    private int m_NumOfOtherClient = -1;
+    public RoomInfo GetRoomInfo(){ return m_RoomInfo; }
+    private RoomInfo m_RoomInfo = null;
 
     private JLabel m_Label = new JLabel();
-    private int m_GroupNum = 0;
 }

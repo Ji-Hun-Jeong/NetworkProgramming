@@ -1,7 +1,6 @@
 package Socket;
 
-import Command.ClientCommand.ClientCommand;
-import Command.ClientCommand.SetClientNumberCommand;
+import Command.ClientCommand.*;
 import FormatBuilder.ClientBuilder;
 import Main.SceneMgr;
 import Scene.*;
@@ -21,20 +20,32 @@ public class Client
         readThread.start();
         System.out.println("Success");
 
-        WaitingScene firstScene = new WaitingScene(m_ClientDelegator, 1280,740,100,100);
-        m_SceneMgr.AddScene(firstScene);
-
-        GameScene gameScene = new GameScene(m_ClientDelegator, 1280,740,100,100);
-        m_SceneMgr.AddScene(gameScene);
-
-        firstScene.SetVisible(true);
-
-        ClientCommand setClientNumberCommand = new SetClientNumberCommand();
+        ClientCommand setClientNumberCommand = new SetClientNumberCommandInClient();
         m_ClientDelegator.AddCommand("SetClientNumber",setClientNumberCommand);
+
+        ClientCommand failedCommand = new FailedCommandInClient();
+        m_ClientDelegator.AddCommand("Failed", failedCommand);
+
+        ClientCommand nothingCommand = new NothingCommandInClient();
+        m_ClientDelegator.AddCommand("Nothing", nothingCommand);
+
+
 
         ClientBuilder clientBuilder = new ClientBuilder("SetClientNumber", Client.m_NumOfClient);
         String formatString = clientBuilder.Build();
         m_ClientDelegator.SendData(formatString);
+
+
+        Scene firstScene = new WaitingScene(m_ClientDelegator, 1280,740,100,100);
+        m_SceneMgr.AddScene(firstScene);
+
+        Scene gameScene = new GameScene(m_ClientDelegator, 1280,740,100,100);
+        m_SceneMgr.AddScene(gameScene);
+
+        Scene readyScene = new ReadyScene(m_ClientDelegator, 1280,740,100,100);
+        m_SceneMgr.AddScene(readyScene);
+
+        firstScene.SetVisible(true);
 
     }
     public static int m_NumOfClient = -1;
