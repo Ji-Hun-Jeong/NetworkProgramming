@@ -10,6 +10,10 @@ public class MyPanel extends JPanel
     {
         m_ClientDelegator = clientDelegator;
     }
+    public void Update()
+    {
+
+    }
     public ClientDelegator GetClientDelegator(){ return m_ClientDelegator; }
     protected ClientDelegator m_ClientDelegator = null;
 }

@@ -28,9 +28,13 @@ public class Server
         ServerCommand changeSceneMeCommand = new ChangeSceneCommandInServer(broadCastMeCommand);
         ServerCommand chatAllCommand = new ChatCommandInServer(broadCastAllCommand);
         ServerCommand giveClientNumberMeCommand = new SetClientNumberCommandInServer(broadCastMeCommand);
-        ServerCommand getRoomsMeCommand = new GetRoomsCommandInServer(broadCastMeCommand);
+        ServerCommand getRoomsMeCommand = new NotifyAllRoomInfoCommandInServer(broadCastMeCommand);
+        ServerCommand getRoomsAllCommand = new NotifyAllRoomInfoCommandInServer(broadCastAllCommand);
+        ServerCommand readySceneSetRoomInfoMeCommand = new ReadySceneSetRoomInfoInServer(broadCastMeCommand);
 
         ServerCommand enterRoomAll_ChangeSceneMe = new EnterRoomCommandInServer(broadCastAllCommand);
+        enterRoomAll_ChangeSceneMe.AddExtraCommand(getRoomsAllCommand);
+        enterRoomAll_ChangeSceneMe.AddExtraCommand(readySceneSetRoomInfoMeCommand);
         enterRoomAll_ChangeSceneMe.AddExtraCommand(changeSceneMeCommand);
 
         ServerCommand makeRoomAll_EnterRoomMeCommand = new MakeRoomCommandInServer(broadCastAllCommand);
@@ -46,7 +50,7 @@ public class Server
 
         m_ServerInterpreter.AddCommand("EnterRoom", enterRoomAll_ChangeSceneMe);
 
-        m_ServerInterpreter.AddCommand("GetRooms", getRoomsMeCommand);
+        m_ServerInterpreter.AddCommand("NotifyRoomInfo", getRoomsMeCommand);
     }
     public void NotifyAllClient(String str) throws IOException
     {

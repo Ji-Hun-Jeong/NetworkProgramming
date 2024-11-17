@@ -1,7 +1,12 @@
 package FormatBuilder;
 
-import java.util.ArrayList;
+import Command.ServerCommand.NotifySpecifyRoomInfoCommandInServer;
+import Command.ServerCommand.ServerCommand;
+import Info.RoomInfo;
+
+import java.util.Map;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 public abstract class FormatBuilder
 {
@@ -15,20 +20,37 @@ public abstract class FormatBuilder
     {
         String result = "";
 
-        for(int i=0; i < m_ArrFormatString.size(); ++i)
-            result = result.concat(",\n" + m_ArrFormatString.get(i));
+        for (Map.Entry<String, String> entry : m_MapFormatString.entrySet())
+        {
+            result = result.concat(",\n" + entry.getKey() + ":" + entry.getValue());
+        }
 
         return result;
     }
     public void AddFormatString(String format, String answer)
     {
-        String formatString = format + ":" + answer;
-        m_ArrFormatString.add(formatString);
+        m_MapFormatString.put(format, answer);
     }
-    public void ClearArrFormatString() { m_ArrFormatString.clear(); }
+    public static<T> String MakeArrDataFormat(TreeSet<T> treeSet)
+    {
+        if(treeSet.size() <= 0)
+            return null;
+        String result = "";
+        for(T i : treeSet)
+        {
+            result += String.valueOf(i) + " ";
+        }
+        return result;
+    }
+    public static String[] GetArrDataByFormat(String arrDataFormat)
+    {
+        String[] values = arrDataFormat.split(" ");
+        return values;
+    }
+    public void ClearMapFormatString() { m_MapFormatString.clear(); }
     public void SetCommandName(String commandName) { m_Command = commandName; }
     public void SetNumOfClient(int numOfClient) { m_NumOfClient = numOfClient; }
-    protected ArrayList<String> m_ArrFormatString = new ArrayList<String>();
+    protected TreeMap<String, String> m_MapFormatString = new TreeMap<>();
     protected String m_Command = null;
     protected int m_NumOfClient = -1;
 

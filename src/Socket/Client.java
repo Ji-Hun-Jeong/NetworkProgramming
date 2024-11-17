@@ -30,19 +30,19 @@ public class Client
         m_ClientDelegator.AddCommand("Nothing", nothingCommand);
 
 
-
         ClientBuilder clientBuilder = new ClientBuilder("SetClientNumber", Client.m_NumOfClient);
         String formatString = clientBuilder.Build();
         m_ClientDelegator.SendData(formatString);
 
 
-        Scene firstScene = new WaitingScene(m_ClientDelegator, 1280,740,100,100);
+        WaitingScene firstScene = new WaitingScene(m_ClientDelegator, 1280,740,100,100);
         m_SceneMgr.AddScene(firstScene);
 
-        Scene gameScene = new GameScene(m_ClientDelegator, 1280,740,100,100);
+        GameScene gameScene = new GameScene(m_ClientDelegator, 1280,740,100,100);
         m_SceneMgr.AddScene(gameScene);
 
-        Scene readyScene = new ReadyScene(m_ClientDelegator, 1280,740,100,100);
+        ReadyScene readyScene = new ReadyScene(firstScene.GetRoomManagerPanel(), m_ClientDelegator
+                , 1280,740,100,100);
         m_SceneMgr.AddScene(readyScene);
 
         firstScene.SetVisible(true);

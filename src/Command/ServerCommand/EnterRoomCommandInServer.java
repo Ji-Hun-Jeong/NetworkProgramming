@@ -33,11 +33,19 @@ public class EnterRoomCommandInServer extends ServerCommand
             return;
         }
 
+        for(int clientNumber : targetRoomInfo.numOfOtherClients)
+        {
+            if(clientNumber == requestClientNumber)
+                return;
+        }
+
         targetRoomInfo.countOfClient += 1;
-        targetRoomInfo.numOfOtherClients.add(requestClientNumber);
+        if(requestClientNumber != targetRoomInfo.numOfMasterClient)
+            targetRoomInfo.numOfOtherClients.add(requestClientNumber);
+
         formatAnswerMap.put("ClientCount", String.valueOf(targetRoomInfo.countOfClient));
 
-        serverBuilder.ClearArrFormatString();
+        serverBuilder.ClearMapFormatString();
         RoomInfo.MakeRoomFormatString(serverBuilder, targetRoomInfo);
     }
 }

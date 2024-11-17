@@ -21,9 +21,7 @@ public class EnterRoomCommandInClient implements ClientCommand
     @Override
     public void Execute(String formatString, TreeMap<String, String> formatAnswerMap)
     {
-        RoomInfo roomInfo = RoomInfo.MakeRoomInfo(formatAnswerMap);
-
-        m_RoomManagerPanel.GetRoom(roomInfo.roomNumber).Refresh(roomInfo);
+        int a =1;
     }
     ClientDelegator m_ClientDelegator = null;
     RoomManagerPanel m_RoomManagerPanel = null;

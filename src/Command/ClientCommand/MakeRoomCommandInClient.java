@@ -23,11 +23,11 @@ public class MakeRoomCommandInClient implements ClientCommand
 
         RoomInfo roomInfo = RoomInfo.MakeRoomInfo(formatAnswerMap);
 
-        m_RoomManagerPanel.AddRoom(new RoomPanel(m_RoomManagerPanel.GetClientDelegator(), roomInfo
-                , roomManagerPanelSize.width, 100));
+        RoomPanel roomPanel = new RoomPanel(m_RoomManagerPanel.GetClientDelegator(), roomInfo
+                , roomManagerPanelSize.width, 100);
+        m_RoomManagerPanel.AddRoom(roomPanel);
 
-        ReadyScene readyScene = (ReadyScene)SceneMgr.GetInst().GetScene("ReadyScene");
-        readyScene.SetRoomInfo(roomInfo);
+
     }
     private RoomManagerPanel m_RoomManagerPanel = null;
 }

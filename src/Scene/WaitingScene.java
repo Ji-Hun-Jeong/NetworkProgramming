@@ -5,7 +5,6 @@ import java.io.IOException;
 
 import Command.ClientCommand.*;
 import FormatBuilder.ClientBuilder;
-import FormatBuilder.ServerBuilder;
 import Panel.*;
 import Socket.Client;
 import Socket.ClientDelegator;
@@ -22,7 +21,7 @@ public class WaitingScene extends Scene
         m_RoomManagerPanel.setLocation(0, 0);
         m_RoomManagerPanel.setLayout(new FlowLayout());
 
-        m_UtilityPanel = new UtilityPanel(m_ClientDelegator);
+        m_UtilityPanel = new MakeRoomPanel(m_ClientDelegator);
         m_UtilityPanel.setSize(m_ScreenWidth / 5, m_ScreenHeight);
         m_UtilityPanel.setLocation(m_ScreenWidth * 3 / 5, 0);
         m_UtilityPanel.setBackground(Color.YELLOW);
@@ -51,15 +50,19 @@ public class WaitingScene extends Scene
         EnterRoomCommandInClient enterRoomCommandInClient = new EnterRoomCommandInClient(m_RoomManagerPanel, m_ClientDelegator);
         m_ClientDelegator.AddCommand("EnterRoom", enterRoomCommandInClient);
 
-        ClientCommand getRoomsCommand = new MakeRoomCommandInClient(m_RoomManagerPanel);
-        m_ClientDelegator.AddCommand("GetRooms", getRoomsCommand);
+        ReadySceneSetRoomInfoInClient readySceneSetRoomInfo = new ReadySceneSetRoomInfoInClient(m_RoomManagerPanel);
+        m_ClientDelegator.AddCommand("ReadySceneSetRoomInfo", readySceneSetRoomInfo);
 
-        ClientBuilder clientBuilder = new ClientBuilder("GetRooms", Client.m_NumOfClient);
+        ClientCommand getRoomsCommand = new NotifyRoomInfoCommandInClient(m_RoomManagerPanel);
+        m_ClientDelegator.AddCommand("NotifyRoomInfo", getRoomsCommand);
+
+        ClientBuilder clientBuilder = new ClientBuilder("NotifyRoomInfo", Client.m_NumOfClient);
         String formatString = clientBuilder.Build();
         m_ClientDelegator.SendData(formatString);
     }
+    public RoomManagerPanel GetRoomManagerPanel() { return m_RoomManagerPanel; }
     private RoomManagerPanel m_RoomManagerPanel = null;
     private ChatAreaPanel m_ChatArea = null;
-    private UtilityPanel m_UtilityPanel = null;
+    private MakeRoomPanel m_UtilityPanel = null;
 
 }

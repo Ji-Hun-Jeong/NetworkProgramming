@@ -1,7 +1,6 @@
 package Panel;
 
 import FormatBuilder.ClientBuilder;
-import FormatBuilder.ServerBuilder;
 import Socket.Client;
 import Socket.ClientDelegator;
 
@@ -135,9 +134,9 @@ class MakeRoomListener implements ActionListener
     private ClientDelegator m_ClientDelegator = null;
     private MakeRoomFrame m_MakeRoomFrame = null;
 }
-public class UtilityPanel extends MyPanel
+public class MakeRoomPanel extends MyPanel
 {
-    public UtilityPanel(ClientDelegator clientDelegator)
+    public MakeRoomPanel(ClientDelegator clientDelegator)
     {
         super(clientDelegator);
         m_ClientDelegator = clientDelegator;
