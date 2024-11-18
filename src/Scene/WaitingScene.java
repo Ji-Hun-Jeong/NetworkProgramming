@@ -47,8 +47,11 @@ public class WaitingScene extends Scene
         chatCommand.AddExecuteTextArea(m_ChatArea.GetTextArea());
         m_ClientDelegator.AddCommand("Chat", chatCommand);
 
-        EnterRoomCommandInClient enterRoomCommandInClient = new EnterRoomCommandInClient(m_RoomManagerPanel, m_ClientDelegator);
+        EnterRoomCommandInClient enterRoomCommandInClient = new EnterRoomCommandInClient();
         m_ClientDelegator.AddCommand("EnterRoom", enterRoomCommandInClient);
+
+        ExitRoomCommandInClient exitRoomCommandInClient = new ExitRoomCommandInClient();
+        m_ClientDelegator.AddCommand("ExitRoom",exitRoomCommandInClient);
 
         ReadySceneSetRoomInfoInClient readySceneSetRoomInfo = new ReadySceneSetRoomInfoInClient(m_RoomManagerPanel);
         m_ClientDelegator.AddCommand("ReadySceneSetRoomInfo", readySceneSetRoomInfo);

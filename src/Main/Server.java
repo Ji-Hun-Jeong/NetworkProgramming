@@ -28,17 +28,21 @@ public class Server
         ServerCommand changeSceneMeCommand = new ChangeSceneCommandInServer(broadCastMeCommand);
         ServerCommand chatAllCommand = new ChatCommandInServer(broadCastAllCommand);
         ServerCommand giveClientNumberMeCommand = new SetClientNumberCommandInServer(broadCastMeCommand);
-        ServerCommand getRoomsMeCommand = new NotifyAllRoomInfoCommandInServer(broadCastMeCommand);
-        ServerCommand getRoomsAllCommand = new NotifyAllRoomInfoCommandInServer(broadCastAllCommand);
+        ServerCommand notifyRoomsInfoMeCommand = new NotifyAllRoomInfoCommandInServer(broadCastMeCommand);
+        ServerCommand notifyRoomsInfoAllCommand = new NotifyAllRoomInfoCommandInServer(broadCastAllCommand);
         ServerCommand readySceneSetRoomInfoMeCommand = new ReadySceneSetRoomInfoInServer(broadCastMeCommand);
 
-        ServerCommand enterRoomAll_ChangeSceneMe = new EnterRoomCommandInServer(broadCastAllCommand);
-        enterRoomAll_ChangeSceneMe.AddExtraCommand(getRoomsAllCommand);
-        enterRoomAll_ChangeSceneMe.AddExtraCommand(readySceneSetRoomInfoMeCommand);
-        enterRoomAll_ChangeSceneMe.AddExtraCommand(changeSceneMeCommand);
+        ServerCommand enterRoom_NotifyAll_ChangeSceneMe = new EnterRoomCommandInServer(broadCastMeCommand);
+        enterRoom_NotifyAll_ChangeSceneMe.AddExtraCommand(notifyRoomsInfoAllCommand);
+        enterRoom_NotifyAll_ChangeSceneMe.AddExtraCommand(readySceneSetRoomInfoMeCommand);
+        enterRoom_NotifyAll_ChangeSceneMe.AddExtraCommand(changeSceneMeCommand);
+
+        ServerCommand exitRoomMeNotifyAll_ChangeSceneMe = new ExitRoomCommandInServer(broadCastMeCommand);
+        exitRoomMeNotifyAll_ChangeSceneMe.AddExtraCommand(notifyRoomsInfoAllCommand);
+        exitRoomMeNotifyAll_ChangeSceneMe.AddExtraCommand(changeSceneMeCommand);
 
         ServerCommand makeRoomAll_EnterRoomMeCommand = new MakeRoomCommandInServer(broadCastAllCommand);
-        makeRoomAll_EnterRoomMeCommand.AddExtraCommand(enterRoomAll_ChangeSceneMe);
+        makeRoomAll_EnterRoomMeCommand.AddExtraCommand(enterRoom_NotifyAll_ChangeSceneMe);
 
         m_ServerInterpreter.AddCommand("ChatAll", chatAllCommand);
 
@@ -48,9 +52,13 @@ public class Server
 
         m_ServerInterpreter.AddCommand("MakeRoom", makeRoomAll_EnterRoomMeCommand);
 
-        m_ServerInterpreter.AddCommand("EnterRoom", enterRoomAll_ChangeSceneMe);
+        m_ServerInterpreter.AddCommand("EnterRoom", enterRoom_NotifyAll_ChangeSceneMe);
 
-        m_ServerInterpreter.AddCommand("NotifyRoomInfo", getRoomsMeCommand);
+        m_ServerInterpreter.AddCommand("ExitRoom", exitRoomMeNotifyAll_ChangeSceneMe);
+
+        m_ServerInterpreter.AddCommand("NotifyRoomInfo", notifyRoomsInfoMeCommand);
+
+
     }
     public void NotifyAllClient(String str) throws IOException
     {
@@ -108,6 +116,7 @@ public class Server
         return m_MapRoomInfo.get(roomNumber);
     }
     public TreeMap<Integer, RoomInfo> GetRoomInfoMap() { return m_MapRoomInfo; }
+    public void RemoveRoomInfo(int roomNumber) { m_MapRoomInfo.remove(roomNumber); }
 
     private Queue<Integer> m_NumOfClientSaveQueue = new LinkedList<Integer>();
     private TreeMap<Integer, ServerDelegator> m_MapClientDelegator = new TreeMap<Integer, ServerDelegator>();
