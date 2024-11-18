@@ -5,11 +5,11 @@ import FormatBuilder.ServerBuilder;
 
 import java.util.TreeMap;
 
-public class ChatCommandInServer extends ServerCommand
+public class RevalidateRoomCommandInServer extends ServerCommand
 {
-    public ChatCommandInServer(BroadcastToClient rangeCommand)
+    public RevalidateRoomCommandInServer(BroadcastToClient rangeCommand)
     {
-        super(rangeCommand, "Chat");
+        super(rangeCommand, "RevalidateRoom");
     }
 
     @Override

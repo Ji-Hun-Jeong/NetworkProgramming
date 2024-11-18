@@ -7,7 +7,7 @@ import java.util.Vector;
 public class ChatCommandInClient implements ClientCommand
 {
     @Override
-    public void Execute(String formatString, TreeMap<String, String> formatAnswerMap)
+    public void Execute(TreeMap<String, String> formatAnswerMap)
     {
         String chatLog = formatAnswerMap.get("Chat Log");
 

@@ -5,25 +5,30 @@ import Main.Server;
 
 import java.io.IOException;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
-public class BroadcastRoomCommand extends RangeCommand
+public class BroadcastRoomCommand extends BroadcastToClient
 {
     public BroadcastRoomCommand(Server server)
     {
         super(server);
     }
     @Override
-    public void Execute(String string, TreeMap<String, String> formatAnswerMap)
+    public void DeliverToClient(String formatString, TreeMap<String, String> formatAnswerMap)
     {
         int roomNumber = Integer.parseInt(formatAnswerMap.get("RoomNumber"));
         RoomInfo roomInfo = m_Server.GetRoomInfo(roomNumber);
-        TreeSet<Integer> inRoomClients = roomInfo.numOfOtherClients;
+
+        if(roomInfo == null)
+        {
+            roomInfo = new RoomInfo();
+            roomInfo = RoomInfo.MakeRoomInfo(formatAnswerMap);
+        }
+
         try
         {
-            m_Server.NotifySpecifyClient(string, roomInfo.numOfMasterClient);
-            for(int inRoomClient : inRoomClients)
-                m_Server.NotifySpecifyClient(string, inRoomClient);
+            m_Server.NotifySpecifyClient(formatString, roomInfo.numOfMasterClient);
+            for(int inRoomClient : roomInfo.numberOfClients)
+                m_Server.NotifySpecifyClient(formatString, inRoomClient);
         }
         catch (IOException e)
         {

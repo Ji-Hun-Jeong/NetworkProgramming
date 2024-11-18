@@ -4,7 +4,7 @@ import Command.ServerCommand.*;
 import Command.ServerCommand.RangeCommand.BroadcastAllCommand;
 import Command.ServerCommand.RangeCommand.BroadcastMeCommand;
 import Command.ServerCommand.RangeCommand.BroadcastRoomCommand;
-import Command.ServerCommand.RangeCommand.RangeCommand;
+import Command.ServerCommand.RangeCommand.BroadcastToClient;
 import Info.RoomInfo;
 import Interpreter.Interpreter;
 import Socket.ServerDelegator;
@@ -21,24 +21,36 @@ public class Server
     {
         m_ServerSocket = new ServerSocket(portNum);
 
-        RangeCommand broadCastAllCommand = new BroadcastAllCommand(this);
-        RangeCommand broadCastMeCommand = new BroadcastMeCommand(this);
-        RangeCommand broadCastRoomCommand = new BroadcastRoomCommand(this);
+        BroadcastToClient broadCastAllCommand = new BroadcastAllCommand(this);
+        BroadcastToClient broadCastMeCommand = new BroadcastMeCommand(this);
+        BroadcastToClient broadCastRoomCommand = new BroadcastRoomCommand(this);
 
         ServerCommand changeSceneMeCommand = new ChangeSceneCommandInServer(broadCastMeCommand);
         ServerCommand chatAllCommand = new ChatCommandInServer(broadCastAllCommand);
+        ServerCommand changeSceneRoomCommand = new ChangeSceneCommandInServer(broadCastRoomCommand);
         ServerCommand giveClientNumberMeCommand = new SetClientNumberCommandInServer(broadCastMeCommand);
-        ServerCommand notifyRoomsInfoMeCommand = new NotifyAllRoomInfoCommandInServer(broadCastMeCommand);
-        ServerCommand notifyRoomsInfoAllCommand = new NotifyAllRoomInfoCommandInServer(broadCastAllCommand);
-        ServerCommand readySceneSetRoomInfoMeCommand = new ReadySceneSetRoomInfoInServer(broadCastMeCommand);
+        ServerCommand revalidateRoomAllCommand = new RevalidateRoomCommandInServer(broadCastAllCommand);
 
-        ServerCommand enterRoom_NotifyAll_ChangeSceneMe = new EnterRoomCommandInServer(broadCastMeCommand);
-        enterRoom_NotifyAll_ChangeSceneMe.AddExtraCommand(notifyRoomsInfoAllCommand);
-        enterRoom_NotifyAll_ChangeSceneMe.AddExtraCommand(readySceneSetRoomInfoMeCommand);
+
+        ServerCommand notifyRoomsInfoMeCommand = new NotifyAllRoomInfoCommandInServer(broadCastMeCommand);
+        notifyRoomsInfoMeCommand.AddExtraCommand(revalidateRoomAllCommand);
+        ServerCommand notifyRoomsInfoAllCommand = new NotifyAllRoomInfoCommandInServer(broadCastAllCommand);
+        notifyRoomsInfoAllCommand.AddExtraCommand(revalidateRoomAllCommand);
+
+        ServerCommand revaildateRoomAllCommand = new ClearRoomCommandInServer(broadCastAllCommand);
+        revaildateRoomAllCommand.AddExtraCommand(notifyRoomsInfoAllCommand);
+
+
+        ServerCommand removeRoomInfoMeCommand = new RemoveRoomInfoCommandInServer(broadCastMeCommand);
+        removeRoomInfoMeCommand.AddExtraCommand(revaildateRoomAllCommand);
+        removeRoomInfoMeCommand.AddExtraCommand(changeSceneRoomCommand);
+
+        ServerCommand enterRoom_NotifyAll_ChangeSceneMe = new EnterRoomCommandInServer(broadCastMeCommand); // null server분리
+        enterRoom_NotifyAll_ChangeSceneMe.AddExtraCommand(revaildateRoomAllCommand);
         enterRoom_NotifyAll_ChangeSceneMe.AddExtraCommand(changeSceneMeCommand);
 
-        ServerCommand exitRoomMeNotifyAll_ChangeSceneMe = new ExitRoomCommandInServer(broadCastMeCommand);
-        exitRoomMeNotifyAll_ChangeSceneMe.AddExtraCommand(notifyRoomsInfoAllCommand);
+        ServerCommand exitRoomMeNotifyAll_ChangeSceneMe = new ExitRoomCommandInServer(broadCastMeCommand, removeRoomInfoMeCommand);
+        exitRoomMeNotifyAll_ChangeSceneMe.AddExtraCommand(revaildateRoomAllCommand);
         exitRoomMeNotifyAll_ChangeSceneMe.AddExtraCommand(changeSceneMeCommand);
 
         ServerCommand makeRoomAll_EnterRoomMeCommand = new MakeRoomCommandInServer(broadCastAllCommand);
@@ -56,7 +68,7 @@ public class Server
 
         m_ServerInterpreter.AddCommand("ExitRoom", exitRoomMeNotifyAll_ChangeSceneMe);
 
-        m_ServerInterpreter.AddCommand("NotifyRoomInfo", notifyRoomsInfoMeCommand);
+        m_ServerInterpreter.AddCommand("NotifyRoomInfo", revaildateRoomAllCommand);
 
 
     }

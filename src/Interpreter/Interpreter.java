@@ -17,7 +17,7 @@ public class Interpreter<T>
         Vector<T> vecCommand = m_MapCommand.get(commandName);
 
         for(T command : vecCommand)
-            ((Command)command).Execute(formatString, m_MapFormatAnswer);
+            ((Command)command).Execute(m_MapFormatAnswer);
 
         m_MapFormatAnswer.clear();
     }

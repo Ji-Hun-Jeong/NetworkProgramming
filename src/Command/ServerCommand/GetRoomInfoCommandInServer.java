@@ -1,6 +1,6 @@
 package Command.ServerCommand;
 
-import Command.ServerCommand.RangeCommand.RangeCommand;
+import Command.ServerCommand.RangeCommand.BroadcastToClient;
 import FormatBuilder.ServerBuilder;
 import Info.RoomInfo;
 
@@ -8,7 +8,7 @@ import java.util.TreeMap;
 
 public class GetRoomInfoCommandInServer extends ServerCommand
 {
-    public GetRoomInfoCommandInServer(RangeCommand rangeCommand)
+    public GetRoomInfoCommandInServer(BroadcastToClient rangeCommand)
     {
         super(rangeCommand, "GetRoomInfo");
     }

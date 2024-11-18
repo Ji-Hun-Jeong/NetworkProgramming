@@ -1,6 +1,6 @@
 package Command.ServerCommand;
 
-import Command.ServerCommand.RangeCommand.RangeCommand;
+import Command.ServerCommand.RangeCommand.BroadcastToClient;
 import FormatBuilder.ServerBuilder;
 import Info.RoomInfo;
 import Main.Server;
@@ -9,7 +9,7 @@ import java.util.TreeMap;
 
 public class NotifySpecifyRoomInfoCommandInServer extends ServerCommand
 {
-    public NotifySpecifyRoomInfoCommandInServer(RangeCommand rangeCommand, RoomInfo roomInfo)
+    public NotifySpecifyRoomInfoCommandInServer(BroadcastToClient rangeCommand, RoomInfo roomInfo)
     {
         super(rangeCommand, "NotifyRoomInfo");
         m_TargetRoomInfo = roomInfo;

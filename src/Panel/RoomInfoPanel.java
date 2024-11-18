@@ -2,6 +2,7 @@ package Panel;
 
 import FormatBuilder.ClientBuilder;
 import Info.RoomInfo;
+import Info.RoomManager;
 import Socket.Client;
 import Socket.ClientDelegator;
 
@@ -10,15 +11,18 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class RoomInfoPanel extends MyPanel
 {
-    public RoomInfoPanel(RoomManagerPanel roomManagerPanel, ClientDelegator clientDelegator, int width, int height)
+    public RoomInfoPanel(RoomManager roomManager, ClientDelegator clientDelegator, int width, int height)
     {
         super(clientDelegator);
-        m_RoomManagerPanel = roomManagerPanel;
+        m_RoomManager = roomManager;
         m_Width = width;
         m_Height = height;
+        m_RoomManager.AddObserveringPanel(this);
+
         setSize(m_Width, m_Height);
         setLayout(new FlowLayout());
 
@@ -54,9 +58,8 @@ public class RoomInfoPanel extends MyPanel
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                RoomInfo roomInfo = m_ReferecenceRoomPanel.GetRoomInfo();
                 ClientBuilder makeRoomBuilder = new ClientBuilder("ExitRoom", Client.m_NumOfClient);
-                makeRoomBuilder.AddFormatString("RoomNumber", String.valueOf(roomInfo.roomNumber));
+                makeRoomBuilder.AddFormatString("RoomNumber", String.valueOf(m_ReferecenceRoomInfo.roomNumber));
                 makeRoomBuilder.AddFormatString("AppearScene", "WaitingScene");
                 makeRoomBuilder.AddFormatString("DisappearScene", "ReadyScene");
                 String formatString = makeRoomBuilder.Build();
@@ -75,27 +78,49 @@ public class RoomInfoPanel extends MyPanel
 
         add(utilPanel);
     }
-    public void SetRoomPanel(RoomPanel roomPanel)
-    {
-        m_ReferecenceRoomPanel = roomPanel;
-        PanelObserver panelObserver = m_ReferecenceRoomPanel.GetObserver();
-        panelObserver.AddSubject(this);
-        Update();
-    }
     @Override
     public void Update()
     {
-        RoomInfo roomInfo = m_ReferecenceRoomPanel.GetRoomInfo();
-        m_Player1Info.setText(String.valueOf(roomInfo.numOfMasterClient));
+        ArrayList<RoomInfo> roomInfoArr = m_RoomManager.GetArrRoomInfo();
+        RoomInfo referenceRoomInfo = null;
+        boolean findRoomInfo = false;
+        for(RoomInfo roomInfo : roomInfoArr)
+        {
+            if(roomInfo.numOfMasterClient == Client.m_NumOfClient)
+            {
+                referenceRoomInfo = roomInfo;
+                findRoomInfo = true;
+            }
+            for(int otherClientNumber : roomInfo.numberOfClients)
+            {
+                if(otherClientNumber == Client.m_NumOfClient)
+                {
+                    referenceRoomInfo = roomInfo;
+                    findRoomInfo = true;
+                    break;
+                }
+            }
+            if(findRoomInfo)
+                break;
+        }
 
-        if(roomInfo.numOfOtherClients.size() > 0)
-            m_Player2Info.setText(String.valueOf(roomInfo.numOfOtherClients.first()));
-        else if(roomInfo.numOfOtherClients.size() == 0)
+        if(referenceRoomInfo == null)
+            return;
+        else
+            m_ReferecenceRoomInfo = referenceRoomInfo;
+
+        System.out.println(Client.m_NumOfClient);
+        m_Player1Info.setText(String.valueOf(m_ReferecenceRoomInfo.numOfMasterClient));
+
+        if(m_ReferecenceRoomInfo.numberOfClients.size() > 0)
+            m_Player2Info.setText(String.valueOf(m_ReferecenceRoomInfo.numberOfClients.first()));
+        else if(m_ReferecenceRoomInfo.numberOfClients.size() == 0)
             m_Player2Info.setText("");
+
         revalidate();
     }
-    private RoomManagerPanel m_RoomManagerPanel = null;
-    private RoomPanel m_ReferecenceRoomPanel = null;
+    private RoomManager m_RoomManager = null;
+    private RoomInfo m_ReferecenceRoomInfo = null;
 
     private JPanel m_Player1InfoPanel = new JPanel();
     private JLabel m_Player1Info = new JLabel();

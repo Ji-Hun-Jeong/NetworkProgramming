@@ -2,19 +2,21 @@ package Command.ServerCommand;
 
 import Command.ServerCommand.RangeCommand.BroadcastToClient;
 import FormatBuilder.ServerBuilder;
+import Info.RoomInfo;
+import Main.Server;
 
 import java.util.TreeMap;
 
-public class ChatCommandInServer extends ServerCommand
+public class ClearRoomCommandInServer extends ServerCommand
 {
-    public ChatCommandInServer(BroadcastToClient rangeCommand)
+    public ClearRoomCommandInServer(BroadcastToClient rangeCommand)
     {
-        super(rangeCommand, "Chat");
+        super(rangeCommand, "ClearRoom");
     }
 
     @Override
     protected void ServerExecute(ServerBuilder serverBuilder, TreeMap<String, String> formatAnswerMap)
     {
-        int a=1;
+
     }
 }

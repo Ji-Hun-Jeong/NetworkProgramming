@@ -1,6 +1,6 @@
 package Command.ServerCommand;
 
-import Command.ServerCommand.RangeCommand.RangeCommand;
+import Command.ServerCommand.RangeCommand.BroadcastToClient;
 import FormatBuilder.ServerBuilder;
 import Main.Server;
 
@@ -8,7 +8,7 @@ import java.util.TreeMap;
 
 public class SetClientNumberCommandInServer extends  ServerCommand
 {
-    public SetClientNumberCommandInServer(RangeCommand rangeCommand)
+    public SetClientNumberCommandInServer(BroadcastToClient rangeCommand)
     {
         super(rangeCommand, "SetClientNumber");
     }

@@ -1,16 +1,18 @@
 package Command.ServerCommand;
 
-import Command.ServerCommand.RangeCommand.RangeCommand;
+import Command.ServerCommand.RangeCommand.BroadcastToClient;
+import FormatBuilder.FormatBuilder;
 import FormatBuilder.ServerBuilder;
+import Info.RoomInfo;
 import Main.Server;
 
 import java.util.TreeMap;
 
 public class RemoveRoomInfoCommandInServer extends ServerCommand
 {
-    public RemoveRoomInfoCommandInServer(RangeCommand rangeCommand)
+    public RemoveRoomInfoCommandInServer(BroadcastToClient rangeCommand)
     {
-        super(rangeCommand, "RemoveRoomInfo");
+        super(rangeCommand, "Nothing");
     }
 
     @Override
@@ -18,6 +20,10 @@ public class RemoveRoomInfoCommandInServer extends ServerCommand
     {
         Server server = m_RangeCommand.GetServer();
         int roomNumber = Integer.parseInt(formatAnswerMap.get("RoomNumber"));
+        RoomInfo deleteRoomInfo = server.GetRoomInfo(roomNumber);
+
+        RoomInfo.MakeFormatAnswerMap(formatAnswerMap, deleteRoomInfo);
+
         server.RemoveRoomInfo(roomNumber);
     }
 }

@@ -5,19 +5,19 @@ import Main.Server;
 import java.io.IOException;
 import java.util.TreeMap;
 
-public class BroadcastMeCommand extends RangeCommand
+public class BroadcastMeCommand extends BroadcastToClient
 {
     public BroadcastMeCommand(Server server)
     {
         super(server);
     }
     @Override
-    public void Execute(String string, TreeMap<String, String> formatAnswerMap)
+    public void DeliverToClient(String formatString, TreeMap<String, String> formatAnswerMap)
     {
         int clientNumber = Integer.parseInt(formatAnswerMap.get("ClientNumber"));
         try
         {
-            m_Server.NotifySpecifyClient(string, clientNumber);
+            m_Server.NotifySpecifyClient(formatString, clientNumber);
         }
         catch (IOException e)
         {

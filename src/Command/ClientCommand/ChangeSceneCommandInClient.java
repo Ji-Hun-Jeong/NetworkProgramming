@@ -7,7 +7,7 @@ import Main.SceneMgr;
 public class ChangeSceneCommandInClient implements ClientCommand
 {
     @Override
-    public void Execute(String formatString, TreeMap<String, String> formatAnswerMap)
+    public void Execute(TreeMap<String, String> formatAnswerMap)
     {
         String appearSceneName = formatAnswerMap.get("AppearScene");
         String disappearSceneName = formatAnswerMap.get("DisappearScene");

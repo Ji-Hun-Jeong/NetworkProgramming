@@ -1,6 +1,6 @@
 package Command.ServerCommand;
 
-import Command.ServerCommand.RangeCommand.RangeCommand;
+import Command.ServerCommand.RangeCommand.BroadcastToClient;
 import FormatBuilder.ServerBuilder;
 import Info.RoomInfo;
 import Main.Server;
@@ -9,9 +9,9 @@ import java.util.TreeMap;
 
 public class MakeRoomCommandInServer extends ServerCommand
 {
-    public MakeRoomCommandInServer(RangeCommand rangeCommand)
+    public MakeRoomCommandInServer(BroadcastToClient rangeCommand)
     {
-        super(rangeCommand, "MakeRoom");
+        super(rangeCommand, "Nothing");
     }
 
     @Override

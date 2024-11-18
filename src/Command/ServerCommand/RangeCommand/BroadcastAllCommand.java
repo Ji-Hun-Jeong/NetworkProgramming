@@ -5,18 +5,18 @@ import Main.Server;
 import java.io.IOException;
 import java.util.TreeMap;
 
-public class BroadcastAllCommand extends RangeCommand
+public class BroadcastAllCommand extends BroadcastToClient
 {
     public BroadcastAllCommand(Server server)
     {
         super(server);
     }
     @Override
-    public void Execute(String string, TreeMap<String, String> formatAnswerMap)
+    public void DeliverToClient(String formatString, TreeMap<String, String> formatAnswerMap)
     {
         try
         {
-            m_Server.NotifyAllClient(string);
+            m_Server.NotifyAllClient(formatString);
         }
         catch (IOException e)
         {

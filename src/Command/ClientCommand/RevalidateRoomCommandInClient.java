@@ -1,24 +1,20 @@
 package Command.ClientCommand;
 
-import Info.RoomInfo;
 import Info.RoomManager;
 
 import java.util.TreeMap;
 
-public class NotifyRoomInfoCommandInClient implements ClientCommand
+public class RevalidateRoomCommandInClient implements ClientCommand
 {
-    public NotifyRoomInfoCommandInClient(RoomManager roomManager)
+    public RevalidateRoomCommandInClient(RoomManager roomManager)
     {
         m_RoomManager = roomManager;
     }
     @Override
     public void Execute(TreeMap<String, String> formatAnswerMap)
     {
-
-        RoomInfo roomInfo = RoomInfo.MakeRoomInfo(formatAnswerMap);
-        m_RoomManager.AddRoomInfo(roomInfo);
-
-
+        // System.out.println("Revalidate");
+        m_RoomManager.Notify();
     }
     private RoomManager m_RoomManager = null;
 }

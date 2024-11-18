@@ -1,6 +1,6 @@
 package Command.ServerCommand;
 
-import Command.ServerCommand.RangeCommand.RangeCommand;
+import Command.ServerCommand.RangeCommand.BroadcastToClient;
 import FormatBuilder.ServerBuilder;
 import Info.RoomInfo;
 import Main.Server;
@@ -9,7 +9,7 @@ import java.util.TreeMap;
 
 public class ExitRoomCommandInServer extends ServerCommand
 {
-    public ExitRoomCommandInServer(RangeCommand rangeCommand, RemoveRoomInfoCommandInServer removeRoomInfoCommand)
+    public ExitRoomCommandInServer(BroadcastToClient rangeCommand, ServerCommand removeRoomInfoCommand)
     {
         super(rangeCommand, "ExitRoom");
         m_RemoveRoomInfoCommand = removeRoomInfoCommand;
@@ -28,22 +28,23 @@ public class ExitRoomCommandInServer extends ServerCommand
         if(targetRoomInfo.countOfClient <= 0)
         {
             serverBuilder.SetCommandName("Failed");
-            m_StopExtraCommandExcute = true;
+            m_StopExtraCommandExecute = true;
             return;
         }
 
-
         if(requestClientNumber == targetRoomInfo.numOfMasterClient)
-            targetRoomInfo.numOfMasterClient = -1;
-        else
-            targetRoomInfo.numOfOtherClients.remove(requestClientNumber);
+        {
+            m_ServerFormatString = serverBuilder.Build();
+            m_RemoveRoomInfoCommand.Execute(formatAnswerMap);
+            return;
+        }
 
         targetRoomInfo.countOfClient -= 1;
-
+        targetRoomInfo.numberOfClients.remove(requestClientNumber);
         formatAnswerMap.put("ClientCount", String.valueOf(targetRoomInfo.countOfClient));
 
         serverBuilder.ClearMapFormatString();
         RoomInfo.MakeRoomFormatString(serverBuilder, targetRoomInfo);
     }
-    private RemoveRoomInfoCommandInServer m_RemoveRoomInfoCommand = null;
+    private ServerCommand m_RemoveRoomInfoCommand = null;
 }

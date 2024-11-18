@@ -6,5 +6,5 @@ import java.util.TreeMap;
 
 public interface ClientCommand extends Command
 {
-    void Execute(String formatString, TreeMap<String, String> formatAnswerMap);
+    void Execute(TreeMap<String, String> formatAnswerMap);
 }

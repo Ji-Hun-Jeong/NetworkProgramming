@@ -1,6 +1,6 @@
 package Command.ServerCommand;
 
-import Command.ServerCommand.RangeCommand.RangeCommand;
+import Command.ServerCommand.RangeCommand.BroadcastToClient;
 import FormatBuilder.ServerBuilder;
 import Info.RoomInfo;
 import Main.Server;
@@ -9,7 +9,7 @@ import java.util.TreeMap;
 
 public class EnterRoomCommandInServer extends ServerCommand
 {
-    public EnterRoomCommandInServer(RangeCommand rangeCommand)
+    public EnterRoomCommandInServer(BroadcastToClient rangeCommand)
     {
         super(rangeCommand, "EnterRoom");
     }
@@ -29,11 +29,11 @@ public class EnterRoomCommandInServer extends ServerCommand
             System.out.println("EnterRoom 고쳐");
             serverBuilder.SetCommandName("Failed");
 
-            m_StopExtraCommandExcute = true;
+            m_StopExtraCommandExecute = true;
             return;
         }
 
-        for(int clientNumber : targetRoomInfo.numOfOtherClients)
+        for(int clientNumber : targetRoomInfo.numberOfClients)
         {
             if(clientNumber == requestClientNumber)
                 return;
@@ -41,7 +41,7 @@ public class EnterRoomCommandInServer extends ServerCommand
 
         targetRoomInfo.countOfClient += 1;
         if(requestClientNumber != targetRoomInfo.numOfMasterClient)
-            targetRoomInfo.numOfOtherClients.add(requestClientNumber);
+            targetRoomInfo.numberOfClients.add(requestClientNumber);
 
         formatAnswerMap.put("ClientCount", String.valueOf(targetRoomInfo.countOfClient));
 

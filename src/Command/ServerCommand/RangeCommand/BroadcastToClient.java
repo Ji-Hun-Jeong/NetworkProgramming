@@ -1,18 +1,17 @@
 package Command.ServerCommand.RangeCommand;
 
-import Command.Command;
 import Main.Server;
 
 import java.util.TreeMap;
 
-public abstract class RangeCommand implements Command
+public abstract class BroadcastToClient
 {
-    protected RangeCommand(Server server)
+    protected BroadcastToClient(Server server)
     {
         m_Server = server;
     }
 
-    abstract public void Execute(String string, TreeMap<String, String> formatAnswerMap);
+    public abstract void DeliverToClient(String formatString, TreeMap<String, String> formatAnswerMap);
     public Server GetServer(){ return m_Server; }
     protected Server m_Server = null;
 }

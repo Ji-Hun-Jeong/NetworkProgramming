@@ -124,18 +124,6 @@ public class RoomPanel extends MyPanel
         setBackground(Color.RED);
         addMouseListener(new EnterRoomActionListener(m_ClientDelegator, m_RoomInfo));
 
-        add(m_Label);
-
-        ValidateInfo();
-    }
-    public void Refresh(RoomInfo roomInfo)
-    {
-        m_RoomInfo = roomInfo;
-        ValidateInfo();
-        m_Observer.Notify();
-    }
-    public void ValidateInfo()
-    {
         String labelText = "<html>" + m_RoomInfo.roomName + "<br>";
 
         if(m_RoomInfo.usePassword)
@@ -144,13 +132,9 @@ public class RoomPanel extends MyPanel
         labelText = labelText.concat(String.valueOf(m_RoomInfo.countOfClient) + " / " + String.valueOf(m_RoomInfo.countOfMaxClient) + "<br>");
 
         m_Label.setText(labelText);
-        validate();
+
+        add(m_Label);
     }
-    public PanelObserver GetObserver() {return m_Observer; }
-    public RoomInfo GetRoomInfo(){ return m_RoomInfo; }
-
     private RoomInfo m_RoomInfo = null;
-    private PanelObserver m_Observer = new PanelObserver();
-
     private JLabel m_Label = new JLabel();
 }

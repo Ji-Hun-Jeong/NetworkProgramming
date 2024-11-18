@@ -15,7 +15,7 @@ public class RoomInfo
     public int countOfMaxClient = 0;
     public int countOfClient = -1;
     public int numOfMasterClient = -1;
-    public TreeSet<Integer> numOfOtherClients = new TreeSet<>();
+    public TreeSet<Integer> numberOfClients = new TreeSet<>();
     public int roomNumber = -1;
 
     static public RoomInfo MakeRoomInfo(TreeMap<String, String> formatAnswerMap)
@@ -30,13 +30,13 @@ public class RoomInfo
         roomInfo.numOfMasterClient = Integer.parseInt(formatAnswerMap.get("MasterNumber"));
         roomInfo.roomNumber = Integer.parseInt(formatAnswerMap.get("RoomNumber"));
 
-        String otherClientsFormatString = formatAnswerMap.get("OtherClients");
-        if(otherClientsFormatString != null)
+        String clientsNumberFormatString = formatAnswerMap.get("NumberOfClients");
+        if(clientsNumberFormatString != null)
         {
-            String[] otherClients = FormatBuilder.GetArrDataByFormat(otherClientsFormatString);
+            String[] otherClients = FormatBuilder.GetArrDataByFormat(clientsNumberFormatString);
             for(String clientNum : otherClients)
             {
-                roomInfo.numOfOtherClients.add(Integer.parseInt(clientNum));
+                roomInfo.numberOfClients.add(Integer.parseInt(clientNum));
             }
         }
 
@@ -51,11 +51,26 @@ public class RoomInfo
         serverBuilder.AddFormatString("ClientCount", String.valueOf(roomInfo.countOfClient));
         serverBuilder.AddFormatString("MasterNumber", String.valueOf(roomInfo.numOfMasterClient));
 
-        String otherClientsFormat = FormatBuilder.MakeArrDataFormat(roomInfo.numOfOtherClients);
+        String otherClientsFormat = FormatBuilder.MakeArrDataFormat(roomInfo.numberOfClients);
         if(otherClientsFormat != null)
-            serverBuilder.AddFormatString("OtherClients", otherClientsFormat);
+            serverBuilder.AddFormatString("NumberOfClients", otherClientsFormat);
         // GroupNumbers
         serverBuilder.AddFormatString("RoomNumber", String.valueOf(roomInfo.roomNumber));
+    }
+    static public void MakeFormatAnswerMap(TreeMap<String, String> map, RoomInfo roomInfo)
+    {
+        map.put("RoomName", roomInfo.roomName);
+        map.put("UsePassword", roomInfo.usePassword == true ? "True" : "False");
+        map.put("Password", roomInfo.password);
+        map.put("MaxClient", String.valueOf(roomInfo.countOfMaxClient));
+        map.put("ClientCount", String.valueOf(roomInfo.countOfClient));
+        map.put("MasterNumber", String.valueOf(roomInfo.numOfMasterClient));
+
+        String otherClientsFormat = FormatBuilder.MakeArrDataFormat(roomInfo.numberOfClients);
+        if(otherClientsFormat != null)
+            map.put("NumberOfClients", otherClientsFormat);
+        // GroupNumbers
+        map.put("RoomNumber", String.valueOf(roomInfo.roomNumber));
     }
     public RoomInfo Copy()
     {
@@ -67,7 +82,7 @@ public class RoomInfo
         returnValue.countOfMaxClient = countOfMaxClient;
         returnValue.countOfClient = countOfClient;
         returnValue.numOfMasterClient = numOfMasterClient;
-        returnValue.numOfOtherClients = (TreeSet<Integer>) numOfOtherClients.clone();
+        returnValue.numberOfClients = (TreeSet<Integer>) numberOfClients.clone();
         returnValue.roomNumber = roomNumber;
         return returnValue;
     }
