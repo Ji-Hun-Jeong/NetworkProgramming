@@ -1,19 +1,24 @@
 package Command.ClientCommand;
 
+import Manager.ChatManager;
+
 import javax.swing.*;
 import java.util.TreeMap;
 import java.util.Vector;
 
 public class ChatCommandInClient implements ClientCommand
 {
+    public ChatCommandInClient(ChatManager chatManager)
+    {
+        m_ChatManager = chatManager;
+    }
     @Override
     public void Execute(TreeMap<String, String> formatAnswerMap)
     {
+        String textAreaName = formatAnswerMap.get("TextAreaName");
         String chatLog = formatAnswerMap.get("Chat Log");
 
-        for(int i=0; i < m_VecLogArea.size(); ++i)
-            m_VecLogArea.get(i).append(chatLog+"\n");
+        m_ChatManager.Notify(textAreaName, chatLog);
     }
-    public void AddExecuteTextArea(JTextArea textArea){ m_VecLogArea.add(textArea); }
-    private Vector<JTextArea> m_VecLogArea = new Vector<JTextArea>();
+    private ChatManager m_ChatManager = null;
 }

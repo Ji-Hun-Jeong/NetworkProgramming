@@ -20,6 +20,14 @@ public class Scene
         m_MainGUI.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
+    public void EnterScene()
+    {
+
+    }
+    public void ExitScene()
+    {
+
+    }
     public int GetScreenWidth() { return m_ScreenWidth; }
     public int GetScreenHeight() { return m_ScreenHeight; }
 

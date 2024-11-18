@@ -5,19 +5,22 @@ import java.io.IOException;
 
 import Command.ClientCommand.*;
 import FormatBuilder.ClientBuilder;
-import Info.RoomManager;
+import Manager.ChatManager;
+import Manager.RoomManager;
 import Panel.*;
 import Socket.Client;
 import Socket.ClientDelegator;
 
 public class WaitingScene extends Scene
 {
-    public WaitingScene(RoomManager roomManager, ClientDelegator clientDelegator, int width, int height, int x, int y) throws IOException
+    public WaitingScene(RoomManager roomManager, ChatManager chatManager, ClientDelegator clientDelegator
+            , int width, int height, int x, int y) throws IOException
     {
         super("WaitingScene", clientDelegator, width, height, x, y);
         m_MainGUI.setLayout(null);
 
         m_RoomManager = roomManager;
+        m_ChatManager = chatManager;
 
         m_RoomVisiblePanel = new RoomVisiblePanel(m_RoomManager, m_ClientDelegator);
         m_RoomVisiblePanel.setSize(m_ScreenWidth * 3 / 5, m_ScreenHeight);
@@ -29,8 +32,11 @@ public class WaitingScene extends Scene
         m_UtilityPanel.setLocation(m_ScreenWidth * 3 / 5, 0);
         m_UtilityPanel.setBackground(Color.YELLOW);
 
-        m_ChatArea = new ChatAreaPanel(m_ClientDelegator, m_ScreenWidth / 5, m_ScreenHeight);
+        m_ChatArea = new ChatAreaPanel("ChatAll","WaitSceneChat",m_ClientDelegator
+                , m_ScreenWidth / 5, m_ScreenHeight);
         m_ChatArea.setLocation(m_ScreenWidth * 4 / 5, 0);
+
+        m_ChatManager.AddExecuteTextArea("WaitSceneChat", m_ChatArea.GetTextArea());
 
         m_MainGUI.add(m_RoomVisiblePanel);
         m_MainGUI.add(m_UtilityPanel);
@@ -45,10 +51,6 @@ public class WaitingScene extends Scene
 
 /*        MakeRoomCommandInClient makeRoomCommand = new MakeRoomCommandInClient(m_RoomVisiblePanel);
         m_ClientDelegator.AddCommand("MakeRoom", makeRoomCommand);*/
-
-        ChatCommandInClient chatCommand = new ChatCommandInClient();
-        chatCommand.AddExecuteTextArea(m_ChatArea.GetTextArea());
-        m_ClientDelegator.AddCommand("Chat", chatCommand);
 
         EnterRoomCommandInClient enterRoomCommandInClient = new EnterRoomCommandInClient();
         m_ClientDelegator.AddCommand("EnterRoom", enterRoomCommandInClient);
@@ -71,6 +73,7 @@ public class WaitingScene extends Scene
     }
     // public RoomVisiblePanel GetRoomManagerPanel() { return m_RoomManagerPanel; }
     private RoomManager m_RoomManager = null;
+    private ChatManager m_ChatManager = null;
     private RoomVisiblePanel m_RoomVisiblePanel = null;
     private ChatAreaPanel m_ChatArea = null;
     private MakeRoomPanel m_UtilityPanel = null;

@@ -1,4 +1,4 @@
-package Main;
+package Manager;
 
 import Scene.Scene;
 import java.util.TreeMap;
@@ -19,6 +19,10 @@ public class SceneMgr
     {
         Scene appearScene = m_MapScene.get(appearSceneName);
         Scene disappearScene = m_MapScene.get(disappearSceneName);
+
+        disappearScene.ExitScene();
+        appearScene.EnterScene();
+
         appearScene.SetVisible(true);
         disappearScene.SetVisible(false);
     }

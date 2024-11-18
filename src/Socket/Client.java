@@ -2,8 +2,9 @@ package Socket;
 
 import Command.ClientCommand.*;
 import FormatBuilder.ClientBuilder;
-import Info.RoomManager;
-import Main.SceneMgr;
+import Manager.ChatManager;
+import Manager.RoomManager;
+import Manager.SceneMgr;
 import Scene.*;
 
 import java.io.*;
@@ -30,11 +31,11 @@ public class Client
         ClientCommand nothingCommand = new NothingCommandInClient();
         m_ClientDelegator.AddCommand("Nothing", nothingCommand);
 
-        ClientCommand revalidateRoomCommand = new RevalidateRoomCommandInClient(m_RoomManager);
-        m_ClientDelegator.AddCommand("RevalidateRoom", revalidateRoomCommand);
-
         ClientCommand clearRoomCommand = new ClearRoomCommandInClient(m_RoomManager);
         m_ClientDelegator.AddCommand("ClearRoom", clearRoomCommand);
+
+        ClientCommand chatCommand = new ChatCommandInClient(m_ChatManager);
+        m_ClientDelegator.AddCommand("Chat", chatCommand);
 
 
         ClientBuilder clientBuilder = new ClientBuilder("SetClientNumber", Client.m_NumOfClient);
@@ -42,14 +43,15 @@ public class Client
         m_ClientDelegator.SendData(formatString);
 
 
-        WaitingScene firstScene = new WaitingScene(m_RoomManager, m_ClientDelegator, 1280,740,100,100);
+        WaitingScene firstScene = new WaitingScene(m_RoomManager, m_ChatManager
+                , m_ClientDelegator, 1280,740,100,100);
         m_SceneMgr.AddScene(firstScene);
 
         GameScene gameScene = new GameScene(m_ClientDelegator, 1280,740,100,100);
         m_SceneMgr.AddScene(gameScene);
 
-        ReadyScene readyScene = new ReadyScene(m_RoomManager, m_ClientDelegator
-                , 1280,740,100,100);
+        ReadyScene readyScene = new ReadyScene(m_RoomManager, m_ChatManager
+                , m_ClientDelegator, 1280,740,100,100);
         m_SceneMgr.AddScene(readyScene);
 
         firstScene.SetVisible(true);
@@ -58,5 +60,6 @@ public class Client
     public static int m_NumOfClient = -1;
     private SceneMgr m_SceneMgr = SceneMgr.GetInst();
     private RoomManager m_RoomManager = new RoomManager();
+    private ChatManager m_ChatManager = new ChatManager();
     private ClientDelegator m_ClientDelegator = null;
 }

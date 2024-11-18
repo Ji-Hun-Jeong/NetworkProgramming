@@ -1,12 +1,11 @@
 package Panel;
 
 import Info.RoomInfo;
-import Info.RoomManager;
+import Manager.RoomManager;
 import Socket.ClientDelegator;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 public class RoomVisiblePanel extends MyPanel
 {
@@ -35,7 +34,8 @@ public class RoomVisiblePanel extends MyPanel
             add(roomPanel);
         }
 
-        validate();
+        revalidate();
+        repaint();
     }
     private RoomManager m_RoomManager = null;
     private ArrayList<RoomPanel> m_ArrRoomPanel = new ArrayList<>();

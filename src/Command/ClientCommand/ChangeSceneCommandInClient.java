@@ -2,7 +2,7 @@ package Command.ClientCommand;
 
 import java.util.TreeMap;
 
-import Main.SceneMgr;
+import Manager.SceneMgr;
 
 public class ChangeSceneCommandInClient implements ClientCommand
 {

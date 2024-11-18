@@ -29,13 +29,10 @@ public class Server
         ServerCommand chatAllCommand = new ChatCommandInServer(broadCastAllCommand);
         ServerCommand changeSceneRoomCommand = new ChangeSceneCommandInServer(broadCastRoomCommand);
         ServerCommand giveClientNumberMeCommand = new SetClientNumberCommandInServer(broadCastMeCommand);
-        ServerCommand revalidateRoomAllCommand = new RevalidateRoomCommandInServer(broadCastAllCommand);
-
-
-        ServerCommand notifyRoomsInfoMeCommand = new NotifyAllRoomInfoCommandInServer(broadCastMeCommand);
-        notifyRoomsInfoMeCommand.AddExtraCommand(revalidateRoomAllCommand);
         ServerCommand notifyRoomsInfoAllCommand = new NotifyAllRoomInfoCommandInServer(broadCastAllCommand);
-        notifyRoomsInfoAllCommand.AddExtraCommand(revalidateRoomAllCommand);
+
+        ServerCommand chatRoomCommand = new PutRoomNumberInServer(broadCastRoomCommand);
+        chatRoomCommand.AddExtraCommand(new ChatCommandInServer(broadCastRoomCommand));
 
         ServerCommand revaildateRoomAllCommand = new ClearRoomCommandInServer(broadCastAllCommand);
         revaildateRoomAllCommand.AddExtraCommand(notifyRoomsInfoAllCommand);
@@ -57,6 +54,8 @@ public class Server
         makeRoomAll_EnterRoomMeCommand.AddExtraCommand(enterRoom_NotifyAll_ChangeSceneMe);
 
         m_ServerInterpreter.AddCommand("ChatAll", chatAllCommand);
+
+        m_ServerInterpreter.AddCommand("ChatRoom", chatRoomCommand);
 
         m_ServerInterpreter.AddCommand("ChangeScene", changeSceneMeCommand);
 

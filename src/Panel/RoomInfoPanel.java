@@ -2,7 +2,7 @@ package Panel;
 
 import FormatBuilder.ClientBuilder;
 import Info.RoomInfo;
-import Info.RoomManager;
+import Manager.RoomManager;
 import Socket.Client;
 import Socket.ClientDelegator;
 
@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class RoomInfoPanel extends MyPanel
 {
@@ -91,6 +92,9 @@ public class RoomInfoPanel extends MyPanel
                 referenceRoomInfo = roomInfo;
                 findRoomInfo = true;
             }
+            if(findRoomInfo)
+                break;
+
             for(int otherClientNumber : roomInfo.numberOfClients)
             {
                 if(otherClientNumber == Client.m_NumOfClient)
@@ -109,15 +113,35 @@ public class RoomInfoPanel extends MyPanel
         else
             m_ReferecenceRoomInfo = referenceRoomInfo;
 
-        System.out.println(Client.m_NumOfClient);
-        m_Player1Info.setText(String.valueOf(m_ReferecenceRoomInfo.numOfMasterClient));
+        Iterator<Integer> iterator = m_ReferecenceRoomInfo.numberOfClients.iterator();
+        int count = 0;
+        int[] number = new int[2];
+        while (iterator.hasNext())
+        {
+            int element = iterator.next();
+            number[count++] = element;
+        }
+        int firstNumber = 0;
+        int secondNumber = 0;
+        if(number[0] == m_ReferecenceRoomInfo.numOfMasterClient)
+        {
+            firstNumber = number[0];
+            secondNumber = number[1];
+        }
+        else
+        {
+            firstNumber = number[1];
+            secondNumber = number[0];
+        }
+        m_Player1Info.setText(String.valueOf(firstNumber));
 
-        if(m_ReferecenceRoomInfo.numberOfClients.size() > 0)
-            m_Player2Info.setText(String.valueOf(m_ReferecenceRoomInfo.numberOfClients.first()));
-        else if(m_ReferecenceRoomInfo.numberOfClients.size() == 0)
+        if(count > 1)
+            m_Player2Info.setText(String.valueOf(secondNumber));
+        else if(count == 1)
             m_Player2Info.setText("");
 
         revalidate();
+        repaint();
     }
     private RoomManager m_RoomManager = null;
     private RoomInfo m_ReferecenceRoomInfo = null;

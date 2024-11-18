@@ -22,7 +22,8 @@ public class RemoveRoomInfoCommandInServer extends ServerCommand
         int roomNumber = Integer.parseInt(formatAnswerMap.get("RoomNumber"));
         RoomInfo deleteRoomInfo = server.GetRoomInfo(roomNumber);
 
-        RoomInfo.MakeFormatAnswerMap(formatAnswerMap, deleteRoomInfo);
+        String originRoomMemberFormatString = FormatBuilder.MakeArrDataFormat(deleteRoomInfo.numberOfClients);
+        formatAnswerMap.put("OriginRoomMember", originRoomMemberFormatString);
 
         server.RemoveRoomInfo(roomNumber);
     }

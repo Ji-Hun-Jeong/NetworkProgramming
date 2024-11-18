@@ -40,8 +40,7 @@ public class EnterRoomCommandInServer extends ServerCommand
         }
 
         targetRoomInfo.countOfClient += 1;
-        if(requestClientNumber != targetRoomInfo.numOfMasterClient)
-            targetRoomInfo.numberOfClients.add(requestClientNumber);
+        targetRoomInfo.numberOfClients.add(requestClientNumber);
 
         formatAnswerMap.put("ClientCount", String.valueOf(targetRoomInfo.countOfClient));
 

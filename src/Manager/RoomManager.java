@@ -1,5 +1,6 @@
-package Info;
+package Manager;
 
+import Info.RoomInfo;
 import Panel.MyPanel;
 
 import java.util.ArrayList;

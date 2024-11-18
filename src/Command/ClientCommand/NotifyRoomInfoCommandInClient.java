@@ -1,7 +1,7 @@
 package Command.ClientCommand;
 
 import Info.RoomInfo;
-import Info.RoomManager;
+import Manager.RoomManager;
 
 import java.util.TreeMap;
 
@@ -14,11 +14,8 @@ public class NotifyRoomInfoCommandInClient implements ClientCommand
     @Override
     public void Execute(TreeMap<String, String> formatAnswerMap)
     {
-
         RoomInfo roomInfo = RoomInfo.MakeRoomInfo(formatAnswerMap);
         m_RoomManager.AddRoomInfo(roomInfo);
-
-
     }
     private RoomManager m_RoomManager = null;
 }

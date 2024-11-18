@@ -33,10 +33,10 @@ public class RoomInfo
         String clientsNumberFormatString = formatAnswerMap.get("NumberOfClients");
         if(clientsNumberFormatString != null)
         {
-            String[] otherClients = FormatBuilder.GetArrDataByFormat(clientsNumberFormatString);
-            for(String clientNum : otherClients)
+            String[] arrClientNumber = FormatBuilder.GetArrDataByFormat(clientsNumberFormatString);
+            for(String clientNumber : arrClientNumber)
             {
-                roomInfo.numberOfClients.add(Integer.parseInt(clientNum));
+                roomInfo.numberOfClients.add(Integer.parseInt(clientNumber));
             }
         }
 
@@ -51,9 +51,9 @@ public class RoomInfo
         serverBuilder.AddFormatString("ClientCount", String.valueOf(roomInfo.countOfClient));
         serverBuilder.AddFormatString("MasterNumber", String.valueOf(roomInfo.numOfMasterClient));
 
-        String otherClientsFormat = FormatBuilder.MakeArrDataFormat(roomInfo.numberOfClients);
-        if(otherClientsFormat != null)
-            serverBuilder.AddFormatString("NumberOfClients", otherClientsFormat);
+        String clientsNumberFormat = FormatBuilder.MakeArrDataFormat(roomInfo.numberOfClients);
+        if(clientsNumberFormat != null)
+            serverBuilder.AddFormatString("NumberOfClients", clientsNumberFormat);
         // GroupNumbers
         serverBuilder.AddFormatString("RoomNumber", String.valueOf(roomInfo.roomNumber));
     }
@@ -66,9 +66,9 @@ public class RoomInfo
         map.put("ClientCount", String.valueOf(roomInfo.countOfClient));
         map.put("MasterNumber", String.valueOf(roomInfo.numOfMasterClient));
 
-        String otherClientsFormat = FormatBuilder.MakeArrDataFormat(roomInfo.numberOfClients);
-        if(otherClientsFormat != null)
-            map.put("NumberOfClients", otherClientsFormat);
+        String clientsNumberFormat = FormatBuilder.MakeArrDataFormat(roomInfo.numberOfClients);
+        if(clientsNumberFormat != null)
+            map.put("NumberOfClients", clientsNumberFormat);
         // GroupNumbers
         map.put("RoomNumber", String.valueOf(roomInfo.roomNumber));
     }

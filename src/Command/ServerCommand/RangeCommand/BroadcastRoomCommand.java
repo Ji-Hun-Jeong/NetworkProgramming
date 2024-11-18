@@ -1,5 +1,6 @@
 package Command.ServerCommand.RangeCommand;
 
+import FormatBuilder.FormatBuilder;
 import Info.RoomInfo;
 import Main.Server;
 
@@ -21,12 +22,15 @@ public class BroadcastRoomCommand extends BroadcastToClient
         if(roomInfo == null)
         {
             roomInfo = new RoomInfo();
-            roomInfo = RoomInfo.MakeRoomInfo(formatAnswerMap);
+            String originRoomMemberString = formatAnswerMap.get("OriginRoomMember");
+            String[] originRoomMember = FormatBuilder.GetArrDataByFormat(originRoomMemberString);
+            for(String roomMember : originRoomMember)
+            {
+                roomInfo.numberOfClients.add(Integer.parseInt(roomMember));
+            }
         }
-
         try
         {
-            m_Server.NotifySpecifyClient(formatString, roomInfo.numOfMasterClient);
             for(int inRoomClient : roomInfo.numberOfClients)
                 m_Server.NotifySpecifyClient(formatString, inRoomClient);
         }

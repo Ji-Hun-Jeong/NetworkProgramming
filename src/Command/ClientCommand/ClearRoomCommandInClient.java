@@ -1,6 +1,6 @@
 package Command.ClientCommand;
 
-import Info.RoomManager;
+import Manager.RoomManager;
 
 import java.util.TreeMap;
 
