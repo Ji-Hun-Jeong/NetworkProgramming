@@ -47,14 +47,14 @@ public class Client
                 , m_ClientDelegator, 1280,740,100,100);
         m_SceneMgr.AddScene(firstScene);
 
-        GameScene gameScene = new GameScene(m_ClientDelegator, 1280,740,100,100);
+        GameScene gameScene = new GameScene(m_ClientDelegator, 1280,830,100,0);
         m_SceneMgr.AddScene(gameScene);
 
         ReadyScene readyScene = new ReadyScene(m_RoomManager, m_ChatManager
                 , m_ClientDelegator, 1280,740,100,100);
         m_SceneMgr.AddScene(readyScene);
 
-        firstScene.SetVisible(true);
+        gameScene.SetVisible(true);
 
     }
     public static int m_NumOfClient = -1;
