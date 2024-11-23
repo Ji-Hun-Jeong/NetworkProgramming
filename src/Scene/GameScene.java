@@ -3,6 +3,11 @@ package Scene;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
+
+import Command.ClientCommand.*;
+import FormatBuilder.ClientBuilder;
+import Socket.Client;
 import Socket.ClientDelegator;
 
 class Board
@@ -26,13 +31,65 @@ public class GameScene extends Scene
 {
     private static final int BOARD_SIZE = 15; // 15x15 오목판
     private Board[][] m_ArrBoard = new Board[BOARD_SIZE][BOARD_SIZE];
-    private boolean m_IsBlackTurn = true; // 흑돌이 먼저 시작
+    private boolean m_IsMyTurn = false; // 흑돌이 먼저 시작
     private JLabel m_CurrentPlayerLabel;
     private ImageIcon m_BlackStone, m_WhiteStone, m_EmptyStone;
+    private int m_RoomNumber = -1;
+
+    public void SetRoomNumber(int roomNumber) { m_RoomNumber = roomNumber; }
+    public void SetTurn(boolean isMyTurn)
+    {
+        m_IsMyTurn = isMyTurn;
+        String text = m_IsMyTurn ? "My Turn" : "Opposite Turn";
+        m_CurrentPlayerLabel.setText(text);
+    }
+    public void PutStone(int row, int col, String color)
+    {
+        ImageIcon setImageIcon = color.equals("Black") ? m_BlackStone : m_WhiteStone;
+        m_ArrBoard[row][col].m_Image.setIcon(setImageIcon);
+        m_ArrBoard[row][col].m_Panel.revalidate();
+        m_ArrBoard[row][col].m_Panel.repaint();
+    }
+    public void Undo(int row, int col)
+    {
+        m_ArrBoard[row][col].m_Image.setIcon(m_EmptyStone);
+    }
+    public void SelectUndoOrNot()
+    {
+        int option = JOptionPane.showConfirmDialog(m_MainGUI,
+                "상대방이 무르기를 요청했습니다. 수락하시겠습니까?",
+                "무르기 요청",
+                JOptionPane.YES_NO_OPTION);
+
+        if (option == JOptionPane.YES_OPTION)
+        {
+            // 무르기 수락
+            ClientBuilder clientBuilder = new ClientBuilder("Undo", Client.m_NumOfClient);
+            clientBuilder.AddFormatString("RoomNumber", String.valueOf(m_RoomNumber));
+            String formatString = clientBuilder.Build();
+            try {
+                m_ClientDelegator.SendData(formatString);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+        else
+        {
+            // 무르기 거절
+            ClientBuilder clientBuilder = new ClientBuilder("RejectUndo", Client.m_NumOfClient);
+            clientBuilder.AddFormatString("RoomNumber", String.valueOf(m_RoomNumber));
+            String formatString = clientBuilder.Build();
+            try {
+                m_ClientDelegator.SendData(formatString);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
 
     public GameScene(ClientDelegator clientDelegator, int width, int height, int x, int y)
     {
-        super("InGameScene", clientDelegator, width, height, x, y);
+        super("GameScene", clientDelegator, width, height, x, y);
 
         // Load stone images
         m_BlackStone = new ImageIcon("images/black.png");
@@ -60,19 +117,58 @@ public class GameScene extends Scene
 
         // 상단 패널: 현재 플레이어 표시 및 리셋 버튼
         JPanel topPanel = new JPanel(new BorderLayout());
-        m_CurrentPlayerLabel = new JLabel("Current Player: Black", SwingConstants.CENTER);
+        m_CurrentPlayerLabel = new JLabel();
         m_CurrentPlayerLabel.setFont(new Font("Arial", Font.BOLD, 16));
         topPanel.add(m_CurrentPlayerLabel, BorderLayout.CENTER);
 
-        JButton resetButton = new JButton("Reset Game");
-        resetButton.addActionListener(e -> resetGame());
+        JButton resetButton = new JButton("무르기");
+        resetButton.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                if(m_IsMyTurn)
+                    return;
+
+                ClientBuilder clientBuilder = new ClientBuilder("RequestUndo", Client.m_NumOfClient);
+                clientBuilder.AddFormatString("RoomNumber", String.valueOf(m_RoomNumber));
+                String formatString = clientBuilder.Build();
+                try {
+                    m_ClientDelegator.SendData(formatString);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
         topPanel.add(resetButton, BorderLayout.EAST);
 
         // 메인 GUI에 추가
         m_MainGUI.add(boardPanel);
         m_MainGUI.add(topPanel);
 
-        m_MainGUI.setVisible(true);
+        ClientCommand resetGameCommand = new ResetGameCommandInClient(this);
+        m_ClientDelegator.AddCommand("ResetGame", resetGameCommand);
+
+        ClientCommand gameOverCommand = new GameOverCommandInClient(this);
+        m_ClientDelegator.AddCommand("GameOver", gameOverCommand);
+
+        ClientCommand setTurnCommand = new GiveTurnCommandInClient(this);
+        m_ClientDelegator.AddCommand("GiveTurn", setTurnCommand);
+
+        ClientCommand putStoneCommand = new PutStoneCommandInClient(this);
+        m_ClientDelegator.AddCommand("PutStone", putStoneCommand);
+
+        ClientCommand gameStartCommand = new GameStartCommandInClient(this);
+        m_ClientDelegator.AddCommand("GameStart", gameStartCommand);
+
+        ClientCommand undoCommand = new UndoCommandInClient(this);
+        m_ClientDelegator.AddCommand("Undo", undoCommand);
+
+        ClientCommand rejectUndoCommand = new RejectUndoCommandInClient();
+        m_ClientDelegator.AddCommand("RejectUndo", rejectUndoCommand);
+
+        ClientCommand requestUndo = new RequestUndoCommandInClient(this);
+        m_ClientDelegator.AddCommand("RequestUndo", requestUndo);
     }
 
     // 핸들러: 돌 배치 및 승리 조건 확인
@@ -89,69 +185,34 @@ public class GameScene extends Scene
         @Override
         public void mouseClicked(MouseEvent e)
         {
-            Board board = m_ArrBoard[row][col];
-            if (!board.m_Image.getIcon().equals(m_EmptyStone))
-            {
-                return; // 이미 돌이 있는 경우 무시
+            if(m_IsMyTurn == false)
+                return;
+
+            ClientBuilder builder = new ClientBuilder("PutStone", Client.m_NumOfClient);
+            builder.AddFormatString("RoomNumber", String.valueOf(m_RoomNumber));
+            builder.AddFormatString("Row", String.valueOf(row));
+            builder.AddFormatString("Col", String.valueOf(col));
+
+            String formatString = builder.Build();
+            try {
+                m_ClientDelegator.SendData(formatString);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
             }
 
-            if (m_IsBlackTurn)
-            {
-                board.m_Image.setIcon(m_BlackStone);
-                m_CurrentPlayerLabel.setText("Current Player: White");
-            }
-            else
-            {
-                board.m_Image.setIcon(m_WhiteStone);
-                m_CurrentPlayerLabel.setText("Current Player: Black");
-            }
 
-            m_IsBlackTurn = !m_IsBlackTurn;
-
-            if (checkWin(row, col))
-            {
-                String winner = m_IsBlackTurn ? "White" : "Black";
-                JOptionPane.showMessageDialog(m_MainGUI, winner + " wins!");
-                resetGame();
-            }
         }
     }
 
-    // 승리 조건 검사
-    private boolean checkWin(int row, int col)
+    public void ShowWinner(String color, boolean winLose)
     {
-        return checkDirection(row, col, 1, 0) || // 가로
-                checkDirection(row, col, 0, 1) || // 세로
-                checkDirection(row, col, 1, 1) || // 대각선 ↘
-                checkDirection(row, col, 1, -1);  // 대각선 ↙
+        String winner = color;
+        JOptionPane.showMessageDialog(m_MainGUI, winner + " wins!");
     }
 
-    private boolean checkDirection(int row, int col, int dr, int dc)
-    {
-        int count = 1;
-        count += countStones(row, col, dr, dc);
-        count += countStones(row, col, -dr, -dc);
-        return count >= 5;
-    }
-
-    private int countStones(int row, int col, int dr, int dc)
-    {
-        int r = row + dr, c = col + dc;
-        int count = 0;
-        ImageIcon targetIcon = (ImageIcon) m_ArrBoard[row][col].m_Image.getIcon();
-
-        while (r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE &&
-                m_ArrBoard[r][c].m_Image.getIcon().equals(targetIcon))
-        {
-            count++;
-            r += dr;
-            c += dc;
-        }
-        return count;
-    }
 
     // 게임 리셋
-    private void resetGame()
+    public void ResetGame()
     {
         for (int i = 0; i < BOARD_SIZE; i++)
         {
@@ -160,7 +221,5 @@ public class GameScene extends Scene
                 m_ArrBoard[i][j].m_Image.setIcon(m_EmptyStone);
             }
         }
-        m_IsBlackTurn = true;
-        m_CurrentPlayerLabel.setText("Current Player: Black");
     }
 }

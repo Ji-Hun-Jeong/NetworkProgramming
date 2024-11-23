@@ -54,7 +54,7 @@ public class Client
                 , m_ClientDelegator, 1280,740,100,100);
         m_SceneMgr.AddScene(readyScene);
 
-        gameScene.SetVisible(true);
+        firstScene.SetVisible(true);
 
     }
     public static int m_NumOfClient = -1;

@@ -1,10 +1,8 @@
 package Main;
 
 import Command.ServerCommand.*;
-import Command.ServerCommand.RangeCommand.BroadcastAllCommand;
-import Command.ServerCommand.RangeCommand.BroadcastMeCommand;
-import Command.ServerCommand.RangeCommand.BroadcastRoomCommand;
-import Command.ServerCommand.RangeCommand.BroadcastToClient;
+import Command.ServerCommand.RangeCommand.*;
+import Info.GameInfo;
 import Info.RoomInfo;
 import Interpreter.Interpreter;
 import Socket.ServerDelegator;
@@ -24,12 +22,40 @@ public class Server
         BroadcastToClient broadCastAllCommand = new BroadcastAllCommand(this);
         BroadcastToClient broadCastMeCommand = new BroadcastMeCommand(this);
         BroadcastToClient broadCastRoomCommand = new BroadcastRoomCommand(this);
+        BroadcastGameCommand broadCastGameCommand = new BroadcastGameCommand(this);
 
-        ServerCommand changeSceneMeCommand = new ChangeSceneCommandInServer(broadCastMeCommand);
         ServerCommand chatAllCommand = new ChatCommandInServer(broadCastAllCommand);
+        ServerCommand changeSceneMeCommand = new ChangeSceneCommandInServer(broadCastMeCommand);
         ServerCommand changeSceneRoomCommand = new ChangeSceneCommandInServer(broadCastRoomCommand);
         ServerCommand giveClientNumberMeCommand = new SetClientNumberCommandInServer(broadCastMeCommand);
         ServerCommand notifyRoomsInfoAllCommand = new NotifyAllRoomInfoCommandInServer(broadCastAllCommand);
+        ServerCommand giveTurnGameCommand = new GiveTurnCommandInServer(broadCastRoomCommand);
+        ServerCommand resetGameCommand = new ResetGameCommandInServer(broadCastRoomCommand);
+        ServerCommand changeOrderGameCommand = new ChangeOrderCommandInServer(broadCastRoomCommand);
+
+        ServerCommand requestUndoRoomCommand = new RequestUndoCommandInServer(broadCastRoomCommand);
+
+        ServerCommand rejectUndoRoomCommand = new RejectUndoCommandInServer(broadCastRoomCommand);
+
+        ServerCommand undoRoomCommand = new UndoCommandInServer(broadCastRoomCommand);
+        undoRoomCommand.AddExtraCommand(changeOrderGameCommand);
+        undoRoomCommand.AddExtraCommand(giveTurnGameCommand);
+
+        ServerCommand gameOverRoomCommand = new GameOverCommandInServer(broadCastRoomCommand);
+        gameOverRoomCommand.AddExtraCommand(resetGameCommand);
+        gameOverRoomCommand.AddExtraCommand(changeSceneRoomCommand);
+
+        ServerCommand checkWinnerGameCommand = new CheckWinnerCommandInServer(broadCastRoomCommand, gameOverRoomCommand);
+        checkWinnerGameCommand.AddExtraCommand(changeOrderGameCommand);
+        checkWinnerGameCommand.AddExtraCommand(giveTurnGameCommand);
+
+        ServerCommand putStoneCommand = new PutStoneCommandInServer(broadCastRoomCommand);
+        putStoneCommand.AddExtraCommand(checkWinnerGameCommand);
+
+
+        ServerCommand gameStartCommand = new GameStartCommandInServer(broadCastRoomCommand);
+        gameStartCommand.AddExtraCommand(changeSceneRoomCommand);
+        gameStartCommand.AddExtraCommand(giveTurnGameCommand);
 
         ServerCommand chatRoomCommand = new PutRoomNumberInServer(broadCastRoomCommand);
         chatRoomCommand.AddExtraCommand(new ChatCommandInServer(broadCastRoomCommand));
@@ -69,7 +95,17 @@ public class Server
 
         m_ServerInterpreter.AddCommand("NotifyRoomInfo", revaildateRoomAllCommand);
 
+        m_ServerInterpreter.AddCommand("GameStart", gameStartCommand);
 
+        m_ServerInterpreter.AddCommand("PutStone", putStoneCommand);
+
+        m_ServerInterpreter.AddCommand("ResetGame", resetGameCommand);
+
+        m_ServerInterpreter.AddCommand("Undo", undoRoomCommand);
+
+        m_ServerInterpreter.AddCommand("RejectUndo", rejectUndoRoomCommand);
+
+        m_ServerInterpreter.AddCommand("RequestUndo", requestUndoRoomCommand);
     }
     public void NotifyAllClient(String str) throws IOException
     {
@@ -122,12 +158,14 @@ public class Server
     {
         m_MapRoomInfo.put(roomInfo.roomNumber, roomInfo);
     }
+    public void RemoveRoomInfo(int roomNumber) { m_MapRoomInfo.remove(roomNumber); }
     public RoomInfo GetRoomInfo(int roomNumber)
     {
         return m_MapRoomInfo.get(roomNumber);
     }
+
     public TreeMap<Integer, RoomInfo> GetRoomInfoMap() { return m_MapRoomInfo; }
-    public void RemoveRoomInfo(int roomNumber) { m_MapRoomInfo.remove(roomNumber); }
+    public TreeMap<Integer, GameInfo> GetGameInfoMap() { return m_MapGameInfo; }
 
     private Queue<Integer> m_NumOfClientSaveQueue = new LinkedList<Integer>();
     private TreeMap<Integer, ServerDelegator> m_MapClientDelegator = new TreeMap<Integer, ServerDelegator>();
@@ -135,5 +173,6 @@ public class Server
     private ServerSocket m_ServerSocket = null;
 
     private TreeMap<Integer, RoomInfo> m_MapRoomInfo = new TreeMap<>();
+    private TreeMap<Integer, GameInfo> m_MapGameInfo = new TreeMap<>();
 
 }

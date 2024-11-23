@@ -51,6 +51,32 @@ public class RoomInfoPanel extends MyPanel
         utilPanel.setSize(m_Width,m_Height / 5);
 
         JButton startButton = new JButton("시작하기");
+        startButton.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                if(m_ReferecenceRoomInfo.countOfClient < 2)
+                    return;
+                if(m_ReferecenceRoomInfo.numOfMasterClient != Client.m_NumOfClient)
+                    return;
+
+                ClientBuilder gameStartBuilder = new ClientBuilder("GameStart", Client.m_NumOfClient);
+                gameStartBuilder.AddFormatString("RoomNumber", String.valueOf(m_ReferecenceRoomInfo.roomNumber));
+                gameStartBuilder.AddFormatString("AppearScene", "GameScene");
+                gameStartBuilder.AddFormatString("DisappearScene", "ReadyScene");
+                String formatString = gameStartBuilder.Build();
+
+                try
+                {
+                    m_ClientDelegator.SendData(formatString);
+                }
+                catch (IOException ex)
+                {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
         utilPanel.add(startButton);
 
         JButton exitButton = new JButton("나가기");
