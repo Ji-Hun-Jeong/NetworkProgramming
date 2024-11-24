@@ -32,24 +32,28 @@ public class Server
         ServerCommand giveTurnGameCommand = new GiveTurnCommandInServer(broadCastRoomCommand);
         ServerCommand resetGameCommand = new ResetGameCommandInServer(broadCastRoomCommand);
         ServerCommand changeOrderGameCommand = new ChangeOrderCommandInServer(broadCastRoomCommand);
+        ServerCommand rejectBy33MeCommand = new RejectBy33CommandInServer(broadCastMeCommand);
+        ServerCommand rejectPutMeCommand = new RejectPutCommandInServer(broadCastMeCommand);
+
+        ServerCommand passTurnToOppositeRoomCommand = new ChangeOrderCommandInServer(broadCastRoomCommand);
+        passTurnToOppositeRoomCommand.AddExtraCommand(giveTurnGameCommand);
 
         ServerCommand requestUndoRoomCommand = new RequestUndoCommandInServer(broadCastRoomCommand);
 
         ServerCommand rejectUndoRoomCommand = new RejectUndoCommandInServer(broadCastRoomCommand);
 
         ServerCommand undoRoomCommand = new UndoCommandInServer(broadCastRoomCommand);
-        undoRoomCommand.AddExtraCommand(changeOrderGameCommand);
-        undoRoomCommand.AddExtraCommand(giveTurnGameCommand);
+        undoRoomCommand.AddExtraCommand(passTurnToOppositeRoomCommand);
 
         ServerCommand gameOverRoomCommand = new GameOverCommandInServer(broadCastRoomCommand);
         gameOverRoomCommand.AddExtraCommand(resetGameCommand);
         gameOverRoomCommand.AddExtraCommand(changeSceneRoomCommand);
 
         ServerCommand checkWinnerGameCommand = new CheckWinnerCommandInServer(broadCastRoomCommand, gameOverRoomCommand);
-        checkWinnerGameCommand.AddExtraCommand(changeOrderGameCommand);
-        checkWinnerGameCommand.AddExtraCommand(giveTurnGameCommand);
+        checkWinnerGameCommand.AddExtraCommand(passTurnToOppositeRoomCommand);
 
-        ServerCommand putStoneCommand = new PutStoneCommandInServer(broadCastRoomCommand);
+        ServerCommand putStoneCommand = new PutStoneCommandInServer(broadCastRoomCommand
+                , rejectPutMeCommand, rejectBy33MeCommand);
         putStoneCommand.AddExtraCommand(checkWinnerGameCommand);
 
 
@@ -106,6 +110,8 @@ public class Server
         m_ServerInterpreter.AddCommand("RejectUndo", rejectUndoRoomCommand);
 
         m_ServerInterpreter.AddCommand("RequestUndo", requestUndoRoomCommand);
+
+        m_ServerInterpreter.AddCommand("PassTurn", passTurnToOppositeRoomCommand);
     }
     public void NotifyAllClient(String str) throws IOException
     {

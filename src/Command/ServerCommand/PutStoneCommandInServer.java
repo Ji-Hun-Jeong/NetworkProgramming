@@ -3,19 +3,19 @@ package Command.ServerCommand;
 import Command.ServerCommand.RangeCommand.BroadcastToClient;
 import FormatBuilder.ServerBuilder;
 import Info.GameInfo;
-import Info.RoomInfo;
 import Info.ePlayerType;
 import Main.Server;
 
-import java.util.Map;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 public class PutStoneCommandInServer extends ServerCommand
 {
-    public PutStoneCommandInServer(BroadcastToClient rangeCommand)
+    public PutStoneCommandInServer(BroadcastToClient rangeCommand, ServerCommand rejectPutCommand
+            , ServerCommand rejectBy33Command)
     {
         super(rangeCommand, "PutStone");
+        m_RejectPutCommand = rejectPutCommand;
+        m_RejectBy33Command = rejectBy33Command;
     }
     @Override
     protected void ServerExecute(ServerBuilder serverBuilder, TreeMap<String, String> formatAnswerMap)
@@ -30,12 +30,22 @@ public class PutStoneCommandInServer extends ServerCommand
         int col = Integer.parseInt(formatAnswerMap.get("Col"));
 
         // 둘 수 있는지 검사
-        if(gameInfo.PutStone(row, col) == false)
+        if(gameInfo.PutPossible(row, col) == false)
         {
             serverBuilder.SetCommandName("Nothing");
+            m_RejectPutCommand.Execute(formatAnswerMap);
             m_StopExtraCommandExecute = true;
             return;
         }
+        if(gameInfo.Is33(row, col))
+        {
+            serverBuilder.SetCommandName("Nothing");
+            m_RejectBy33Command.Execute(formatAnswerMap);
+            m_StopExtraCommandExecute = true;
+            return;
+        }
+
+        gameInfo.PutStone(row, col);
 
         String color = gameInfo.order == ePlayerType.First ? "Black" : "White";
 
@@ -43,4 +53,6 @@ public class PutStoneCommandInServer extends ServerCommand
         formatAnswerMap.put("Color", color);
 
     }
+    private ServerCommand m_RejectPutCommand = null;
+    private ServerCommand m_RejectBy33Command = null;
 }

@@ -38,7 +38,7 @@ public class ReadyScene extends Scene
     }
 
     private RoomManager m_RoomManager = null;
-    private ChatManager m_ChatManager = null;
     private RoomInfoPanel m_RoomInfoPanel = null;
+    private ChatManager m_ChatManager = null;
     private ChatAreaPanel m_ChatAreaPanel = null;
 }

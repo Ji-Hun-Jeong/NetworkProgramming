@@ -5,17 +5,16 @@ import Socket.Client;
 
 import java.util.TreeMap;
 
-public class RejectUndoCommandInClient implements ClientCommand
+public class RejectBy33CommandInClient implements ClientCommand
 {
-    public RejectUndoCommandInClient(GameScene gameScene)
+    public RejectBy33CommandInClient(GameScene gameScene)
     {
         m_ReferenceGameScene = gameScene;
     }
     @Override
     public void Execute(TreeMap<String, String> formatAnswerMap)
     {
-        if(Integer.parseInt(formatAnswerMap.get("OppositeClientNumber")) != Client.m_NumOfClient)
-            m_ReferenceGameScene.RejectUndo();
+        m_ReferenceGameScene.RejectBy33();
     }
     private GameScene m_ReferenceGameScene = null;
 }

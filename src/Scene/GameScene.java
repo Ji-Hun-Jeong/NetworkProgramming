@@ -7,8 +7,10 @@ import java.io.IOException;
 
 import Command.ClientCommand.*;
 import FormatBuilder.ClientBuilder;
+import Manager.ChatManager;
 import Socket.Client;
 import Socket.ClientDelegator;
+import Panel.*;
 
 class Board
 {
@@ -35,74 +37,33 @@ public class GameScene extends Scene
     private JLabel m_CurrentPlayerLabel;
     private ImageIcon m_BlackStone, m_WhiteStone, m_EmptyStone;
     private int m_RoomNumber = -1;
+    private ChatManager m_ChatManager = null;
+    private ChatAreaPanel m_ChatAreaPanel = null;
+    private JPanel m_TimePanel = new JPanel();
+    private JLabel m_TimeLabel = new JLabel();
+    private int m_StdTime = 20;
+    private int m_CurTime = 10;
+    private Timer m_Timer = null;
 
-    public void SetRoomNumber(int roomNumber) { m_RoomNumber = roomNumber; }
-    public void SetTurn(boolean isMyTurn)
-    {
-        m_IsMyTurn = isMyTurn;
-        String text = m_IsMyTurn ? "My Turn" : "Opposite Turn";
-        m_CurrentPlayerLabel.setText(text);
-    }
-    public void PutStone(int row, int col, String color)
-    {
-        ImageIcon setImageIcon = color.equals("Black") ? m_BlackStone : m_WhiteStone;
-        m_ArrBoard[row][col].m_Image.setIcon(setImageIcon);
-        m_ArrBoard[row][col].m_Panel.revalidate();
-        m_ArrBoard[row][col].m_Panel.repaint();
-    }
-    public void Undo(int row, int col)
-    {
-        m_ArrBoard[row][col].m_Image.setIcon(m_EmptyStone);
-    }
-    public void SelectUndoOrNot()
-    {
-        int option = JOptionPane.showConfirmDialog(m_MainGUI,
-                "상대방이 무르기를 요청했습니다. 수락하시겠습니까?",
-                "무르기 요청",
-                JOptionPane.YES_NO_OPTION);
-
-        if (option == JOptionPane.YES_OPTION)
-        {
-            // 무르기 수락
-            ClientBuilder clientBuilder = new ClientBuilder("Undo", Client.m_NumOfClient);
-            clientBuilder.AddFormatString("RoomNumber", String.valueOf(m_RoomNumber));
-            String formatString = clientBuilder.Build();
-            try {
-                m_ClientDelegator.SendData(formatString);
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        }
-        else
-        {
-            // 무르기 거절
-            ClientBuilder clientBuilder = new ClientBuilder("RejectUndo", Client.m_NumOfClient);
-            clientBuilder.AddFormatString("RoomNumber", String.valueOf(m_RoomNumber));
-            String formatString = clientBuilder.Build();
-            try {
-                m_ClientDelegator.SendData(formatString);
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            }
-        }
-    }
-
-    public GameScene(ClientDelegator clientDelegator, int width, int height, int x, int y)
+    public GameScene(ChatManager chatManager, ClientDelegator clientDelegator, int width, int height, int x, int y)
     {
         super("GameScene", clientDelegator, width, height, x, y);
 
+        m_ChatManager = chatManager;
         // Load stone images
         m_BlackStone = new ImageIcon("images/black.png");
         m_WhiteStone = new ImageIcon("images/white.png");
         m_EmptyStone = new ImageIcon("images/empty.png");
 
         // UI 구성
-        m_MainGUI.setLayout(new FlowLayout());
+        m_MainGUI.setLayout(null);
 
         // 오목판 패널
         JPanel boardPanel = new JPanel();
         boardPanel.setLayout(new GridLayout(BOARD_SIZE, BOARD_SIZE, 0, 0)); // 간격 완전 제거
         boardPanel.setBorder(BorderFactory.createEmptyBorder()); // 여백 제거
+        boardPanel.setLocation(0, 0);
+        boardPanel.setSize(new Dimension(750, 750));
 
         for (int i = 0; i < BOARD_SIZE; i++)
         {
@@ -115,11 +76,14 @@ public class GameScene extends Scene
             }
         }
 
+        Dimension boardPanelSize = boardPanel.getSize();
         // 상단 패널: 현재 플레이어 표시 및 리셋 버튼
         JPanel topPanel = new JPanel(new BorderLayout());
         m_CurrentPlayerLabel = new JLabel();
         m_CurrentPlayerLabel.setFont(new Font("Arial", Font.BOLD, 16));
         topPanel.add(m_CurrentPlayerLabel, BorderLayout.CENTER);
+        topPanel.setLocation(boardPanelSize.width, 0);
+        topPanel.setSize(400, 100);
 
         JButton resetButton = new JButton("무르기");
         resetButton.addActionListener(new ActionListener()
@@ -142,9 +106,21 @@ public class GameScene extends Scene
         });
         topPanel.add(resetButton, BorderLayout.EAST);
 
+        m_ChatAreaPanel = new ChatAreaPanel("ChatRoom","GameSceneChat", m_ClientDelegator
+                , m_ScreenWidth * 2 / 5, m_ScreenHeight * 2 / 5);
+        m_ChatAreaPanel.setLocation(m_ScreenWidth * 3 / 5, m_ScreenHeight * 3 / 5);
+
+        m_ChatManager.AddExecuteTextArea("GameSceneChat", m_ChatAreaPanel.GetTextArea());
+
+        m_TimePanel.setSize(100,50);
+        m_TimePanel.setLocation(m_ScreenWidth * 3 / 5, m_ScreenHeight * 2 / 5);
+        m_TimePanel.add(m_TimeLabel);
+
         // 메인 GUI에 추가
         m_MainGUI.add(boardPanel);
         m_MainGUI.add(topPanel);
+        m_MainGUI.add(m_ChatAreaPanel);
+        m_MainGUI.add(m_TimePanel);
 
         ClientCommand resetGameCommand = new ResetGameCommandInClient(this);
         m_ClientDelegator.AddCommand("ResetGame", resetGameCommand);
@@ -164,11 +140,89 @@ public class GameScene extends Scene
         ClientCommand undoCommand = new UndoCommandInClient(this);
         m_ClientDelegator.AddCommand("Undo", undoCommand);
 
-        ClientCommand rejectUndoCommand = new RejectUndoCommandInClient();
+        ClientCommand rejectUndoCommand = new RejectUndoCommandInClient(this);
         m_ClientDelegator.AddCommand("RejectUndo", rejectUndoCommand);
+
+        ClientCommand rejectBy33Command = new RejectBy33CommandInClient(this);
+        m_ClientDelegator.AddCommand("RejectBy33", rejectBy33Command);
+
+        ClientCommand rejectPutCommand = new RejectPutCommandInClient(this);
+        m_ClientDelegator.AddCommand("RejectPut", rejectPutCommand);
 
         ClientCommand requestUndo = new RequestUndoCommandInClient(this);
         m_ClientDelegator.AddCommand("RequestUndo", requestUndo);
+
+        m_Timer = new Timer(1000, new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                m_CurTime -= 1;
+                m_TimeLabel.setText("Time : " + m_CurTime);
+                if(m_CurTime <= 0)
+                {
+                    ClientBuilder clientBuilder = new ClientBuilder("PassTurn", Client.m_NumOfClient);
+                    clientBuilder.AddFormatString("RoomNumber", String.valueOf(m_RoomNumber));
+                    String formatString = clientBuilder.Build();
+                    try {
+                        m_ClientDelegator.SendData(formatString);
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    m_Timer.stop();
+                }
+            }
+        });
+    }
+    public void SetRoomNumber(int roomNumber) { m_RoomNumber = roomNumber; }
+    public void SetTurn(boolean isMyTurn)
+    {
+        m_IsMyTurn = isMyTurn;
+        String text = m_IsMyTurn ? "My Turn" : "Opposite Turn";
+        m_CurrentPlayerLabel.setText(text);
+        if(m_IsMyTurn)
+        {
+            m_CurTime = m_StdTime;
+            m_Timer.start();
+        }
+        else
+        {
+            if(m_Timer != null)
+                m_Timer.stop();
+        }
+    }
+    public void PutStone(int row, int col, String color)
+    {
+        ImageIcon setImageIcon = color.equals("Black") ? m_BlackStone : m_WhiteStone;
+        m_ArrBoard[row][col].m_Image.setIcon(setImageIcon);
+        m_ArrBoard[row][col].m_Panel.revalidate();
+        m_ArrBoard[row][col].m_Panel.repaint();
+    }
+    public void Undo(int row, int col)
+    {
+        m_ArrBoard[row][col].m_Image.setIcon(m_EmptyStone);
+    }
+    public void SelectUndoOrNot()
+    {
+        int option = JOptionPane.showConfirmDialog(m_MainGUI,
+                "상대방이 무르기를 요청했습니다. 수락하시겠습니까?",
+                "무르기 요청",
+                JOptionPane.YES_NO_OPTION);
+
+        ClientBuilder clientBuilder = null;
+
+        if (option == JOptionPane.YES_OPTION)
+            clientBuilder = new ClientBuilder("Undo", Client.m_NumOfClient);
+        else
+            clientBuilder = new ClientBuilder("RejectUndo", Client.m_NumOfClient);
+
+        clientBuilder.AddFormatString("RoomNumber", String.valueOf(m_RoomNumber));
+        String formatString = clientBuilder.Build();
+        try {
+            m_ClientDelegator.SendData(formatString);
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     // 핸들러: 돌 배치 및 승리 조건 확인
@@ -209,7 +263,18 @@ public class GameScene extends Scene
         String winner = color;
         JOptionPane.showMessageDialog(m_MainGUI, winner + " wins!");
     }
-
+    public void RejectPut()
+    {
+        JOptionPane.showMessageDialog(m_MainGUI, "동일한 위치에 둘 수 없습니다.");
+    }
+    public void RejectUndo()
+    {
+        JOptionPane.showMessageDialog(m_MainGUI, "상대방이 무르기를 거절하였습니다.");
+    }
+    public void RejectBy33()
+    {
+        JOptionPane.showMessageDialog(m_MainGUI, "흑 33은 불가능합니다.");
+    }
 
     // 게임 리셋
     public void ResetGame()
