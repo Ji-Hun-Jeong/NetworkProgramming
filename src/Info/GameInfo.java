@@ -70,17 +70,19 @@ public class GameInfo
         int c = col + _dc;
 
         int whiteCount = 0;
+        boolean prevEmpty = false;
         if(r >= 0 && r < MAXROW && c >= 0 && c < MAXCOL)
         {
             if(board[r][c] == ePlayerType.First)
                 dp[0] = 1;
             else if(board[r][c] == ePlayerType.Second)
                 whiteCount += 1;
+            else
+                prevEmpty = true;
         }
 
         _dr += dr;
         _dc += dc;
-
 
         int maxContinuesBlackCount = 0;
         for(int i = 1; i < 7; ++i)
@@ -93,11 +95,20 @@ public class GameInfo
                 {
                     dp[i] = 0;
                     whiteCount += 1;
+                    prevEmpty = false;
                 }
                 else if(board[r][c] == ePlayerType.First)
+                {
                     dp[i] = dp[i - 1] + 1;
+                    prevEmpty = false;
+                }
                 else
+                {
                     dp[i] = dp[i - 1];
+                    if (prevEmpty)
+                        dp[i] = 0;
+                    prevEmpty = true;
+                }
             }
 
             maxContinuesBlackCount = Math.max(maxContinuesBlackCount, dp[i]);

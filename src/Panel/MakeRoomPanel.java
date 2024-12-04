@@ -31,7 +31,6 @@ class MakeRoomFrame extends JFrame
         namePanel.add(m_RoomNameTextArea);
         add(namePanel);
 
-
         JPanel usePwPanel = new JPanel();
         usePwPanel.setSize(panelSize);
         label = new JLabel("비밀번호 사용");

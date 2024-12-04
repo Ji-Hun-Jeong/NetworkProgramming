@@ -147,7 +147,6 @@ public class Server
 
                 readThread = new Thread(serverDelegator);
                 readThread.start();
-
             }
             catch (IOException e)
             {
